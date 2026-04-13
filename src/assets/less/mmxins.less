@@ -1,0 +1,91 @@
+﻿@screen-xs-min: 480px;
+@screen-sm-min: 768px;
+@screen-md-min: 992px;
+@screen-lg-min: 1200px;
+
+@screen-xxs-max: (@screen-xs-min - 1);
+@screen-xs-max: (@screen-sm-min - 1);
+@screen-sm-max: (@screen-md-min - 1);
+@screen-md-max: (@screen-lg-min - 1);
+
+.at-max(@res, @rules) {
+    @media screen and (max-width: @res) {
+        @rules();
+    }
+}
+
+.at-max-land-xs(@rules) {
+    @media screen and (min-height: 320px) and (max-height: 479px) {
+        @rules();
+    }
+
+    @media screen and (max-height: 479px) and (orientation: landscape) {
+        @rules();
+    }
+}
+    .media-xxs(@rules) {
+        @media screen and (max-width: @screen-xxs-max) {
+            @rules();
+        }
+    }
+
+    .media-above-xxs(@rules) {
+        @media screen and (min-width: @screen-xs-min) {
+            @rules();
+        }
+    }
+
+    .media-xs(@rules) {
+        @media screen and (max-width: @screen-xs-max) {
+            @rules();
+        }
+    }
+
+    .media-sm(@rules) {
+        @media screen and (min-width: @screen-sm-min) and (max-width: @screen-sm-max) {
+            @rules();
+        }
+    }
+
+    .media-md(@rules) {
+        @media screen and (min-width: @screen-md-min) and (max-width: @screen-md-max) {
+            @rules();
+        }
+    }
+
+    .media-lg(@rules) {
+        @media screen and (min-width: @screen-lg-min) {
+            @rules();
+        }
+    }
+
+    .media-xs-and-above(@rules) {
+        @media screen and (min-width: @screen-xs-min) {
+            @rules();
+        }
+    }
+
+    .media-sm-and-above(@rules) {
+        @media screen and (min-width: @screen-sm-min) {
+            @rules();
+        }
+    }
+
+    .media-md-and-above(@rules) {
+        @media screen and (min-width: @screen-md-min) {
+            @rules();
+        }
+    }
+
+    .media-sm-and-below(@rules) {
+        @media screen and (max-width: @screen-sm-max) {
+            @rules();
+        }
+    }
+
+    .media-md-and-below(@rules) {
+        @media screen and (max-width: @screen-md-max) {
+            @rules();
+        }
+    }
+

@@ -1,0 +1,132 @@
+/* ========== КРАСИВЫЙ ПЕРЕКЛЮЧАТЕЛЬ (TOGGLE) ========== */
+.theme-switch-wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.theme-switch {
+  position: relative;
+  display: inline-block;
+  width: 68px;
+  height: 34px;
+}
+
+.theme-switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+/* Слайдер */
+.slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(135deg, #6366f1, #8b5cf6);
+  border-radius: 34px;
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+
+.slider:before {
+  position: absolute;
+  content: "";
+  height: 28px;
+  width: 28px;
+  left: 3px;
+  bottom: 3px;
+  background-color: white;
+  border-radius: 50%;
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+/* Иконки внутри переключателя */
+.slider-icons {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 14px;
+  pointer-events: none;
+  transition: all 0.4s ease;
+}
+
+.icon-sun {
+  left: 8px;
+  color: #fbbf24;
+  opacity: 1;
+}
+
+.icon-moon {
+  right: 8px;
+  color: #c7d2fe;
+  opacity: 0;
+}
+
+/* Состояние "включено" (тёмная тема) */
+.theme-switch input:checked + .slider {
+  background: linear-gradient(135deg, #1e1b4b, #312e81);
+}
+
+.theme-switch input:checked + .slider:before {
+  transform: translateX(34px);
+}
+
+.theme-switch input:checked + .slider .icon-sun {
+  opacity: 0;
+}
+
+.theme-switch input:checked + .slider .icon-moon {
+  opacity: 1;
+}
+
+/* Метки рядом с переключателем */
+.theme-label {
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: color 0.3s ease;
+}
+
+.theme-label.light-label {
+  margin-right: 8px;
+}
+
+.theme-label.dark-label {
+  margin-left: 8px;
+}
+
+.theme-label.active {
+  color: var(--accent);
+  font-weight: 600;
+}
+
+/* Кнопка демонстрации */
+.demo-btn {
+  background: linear-gradient(135deg, var(--accent), var(--accent-hover));
+  color: white;
+  border: none;
+  padding: 12px 24px;
+  border-radius: 12px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  margin-top: 1rem;
+}
+
+.demo-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(99, 102, 241, 0.3);
+}
+
+.demo-btn:active {
+  transform: translateY(0);
+}

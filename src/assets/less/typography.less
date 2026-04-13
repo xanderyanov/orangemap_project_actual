@@ -1,0 +1,162 @@
+h1 {
+  font-family: "Unbounded";
+  font-size: 48px;
+  font-weight: 700;
+  .at-max(500px, {
+    font-size: 26px;
+  });
+}
+
+h2 {
+  font-family: "Unbounded";
+  font-size: 38px;
+  font-weight: 700;
+}
+
+h3 {
+  font-family: "Unbounded";
+  font-size: 28px;
+  font-weight: 700;
+}
+
+h4 {
+  font-family: "Unbounded";
+  font-size: 24px;
+  font-weight: 700;
+}
+
+h5 {
+  font-family: "Ubuntu";
+  font-size: 20px;
+  font-weight: 500;
+}
+
+h6 {
+  font-size: 14px;
+}
+
+.content p,
+.content blockquote,
+.content table {
+  font-family: "Ubuntu";
+  font-size: 16px;
+  font-weight: 400;
+}
+
+.content ul,
+.content ol {
+  font-family: "Ubuntu";
+  font-size: 16px;
+  font-weight: 400;
+}
+
+.content p:last-child,
+.content ul:last-child,
+.content ol:last-child,
+.content blockquote:last-child,
+.content table:last-child {
+  margin-bottom: 0;
+}
+
+.content ul,
+.content ol {
+  padding: 0 0 0 25px;
+}
+
+.content ul li,
+.content ol li {
+  margin: 0 0 0px 0;
+  padding: 0 0 0 10px;
+}
+
+.content ul li {
+  /*list-style-image: url(../img/ulbg.png);*/
+}
+
+.content blockquote {
+}
+
+.content blockquote p {
+  font-family: "Ubuntu";
+  font-size: 16px;
+  font-weight: 400;
+}
+
+.content a {
+  font-family: "Ubuntu";
+  font-size: 16px;
+  font-weight: 400;
+}
+
+.content b,
+.content strong {
+  font-weight: bold;
+}
+
+.content i,
+.content cite,
+.content em,
+.content var,
+.content address,
+.content dfn {
+  font-style: italic;
+}
+
+.content table {
+  width: 100%;
+}
+
+.content table th,
+.content table td {
+  padding: 5px;
+  border: 1px solid #987d5c;
+}
+
+.content ol {
+  counter-reset: li;
+  padding: 0;
+  list-style: none;
+  margin: 20px 0;
+}
+
+.content ol li {
+  position: relative;
+  margin: 0;
+  padding-left: 30px;
+  color: #363636;
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 24px;
+}
+
+.content ol li:before {
+  content: counter(li) ".";
+  counter-increment: li;
+  position: absolute;
+  left: 0px;
+  width: 25px;
+  text-align: right;
+  display: inline-block;
+  color: #987d5c;
+  font-family: "Cuprum";
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 24px;
+}
+
+table.clear {
+  border-collapse: collapse;
+  margin-bottom: 15px;
+}
+
+table.clear td {
+  text-align: center;
+  vertical-align: middle;
+  border: 0;
+}
+
+.content img {
+  max-width: 100%;
+  display: inline-block;
+  margin-bottom: 10px;
+}

@@ -1,0 +1,25 @@
+mixin svgmap 
+  //- #current-shop(data-shop-id="rest_bq" data-zoom="2.5" style="display: none;")
+  .svgMap__area#svgMap
+    .filters
+      button.filter-btn.active(data-filter="all") Все
+      button.filter-btn(data-filter="mag") Магазины 
+      button.filter-btn(data-filter="serv") Услуги 
+      button.filter-btn(data-filter="rest") Кафе и рестораны 
+      button.filter-btn(data-filter="baz") Оранжевый базар 
+      button.filter-btn(data-filter="pav") Павильон 
+
+    .mapContainer
+      #map-wrapper
+        #map-container
+          include assets/img/orange4.svg
+        #shop-labels
+
+    #shop-popup.popup
+      .popup-content
+        span.close-btn &times;
+        h2#popup-title.popup-title
+        p#popup-desc.popup-desc
+        span#popup-category-tag.popup-category
+        .popup-link-wrapper
+          a(href="#" id="popup-link" class="popup-link" target="_blank") Подробнее

@@ -1,0 +1,88 @@
+.xSwiper__left,
+.xSwiper__right {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 10;
+  cursor: pointer;
+  transition: all 0.3s;
+
+  .at-max(1280px, {
+    display: none;
+  });
+}
+
+.xSwiper__left {
+  left: 0;
+}
+
+.xSwiper__right {
+  right: 0;
+}
+
+.xSwiper__left i,
+.xSwiper__right i {
+  font-size: 28px;
+  color: var(--bright);
+  transition: all 0.3s;
+}
+
+.swiper-container:hover .xSwiper__left,
+.swiper-container:hover .xSwiper__right {
+  background: #e7e4f4;
+}
+
+.swiper-container:hover .xSwiper__left i,
+.swiper-container:hover .xSwiper__right i {
+  opacity: 1;
+  color: #5d4b62;
+}
+
+.xSwiper__left:hover,
+.xSwiper__right:hover {
+  background: var(--color1) !important;
+}
+
+.xSwiper__left:hover i,
+.xSwiper__right:hover i {
+  opacity: 1;
+  color: #fff !important;
+}
+
+.xSwiper__left:focus,
+.xSwiper__right:focus {
+  border: none;
+  outline: none;
+}
+
+.xSwiper__left.disabled,
+.xSwiper__right.disabled {
+  display: none;
+}
+
+.xSwiperPagination {
+  height: 12px;
+  width: 100%;
+  display: none;
+
+  .at-max(1280px, {
+    display: block;
+  });
+}
+
+.xSwiperPagination .swiper-pagination-bullet {
+  width: 12px;
+  height: 12px;
+  border-radius: 100%;
+  background: #cecbda;
+  opacity: 1;
+  margin: 0 4px;
+}
+
+.xSwiperPagination .swiper-pagination-bullet-active {
+  background: #5d4b62;
+  opacity: 1;
+}

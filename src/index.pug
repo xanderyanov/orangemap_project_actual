@@ -1,0 +1,45 @@
+- var pageTitle = 'Главная страница'
+- var seoKeywords = 'Ключевые слова для страницы'
+- var seoDesc = 'Сео описание для страницы'
+
+include __const
+include __header
+include __footer
+include __svgmap
+
+
+<!DOCTYPE html>
+html(lang="ru-RU")
+  +head
+  body
+    .preloader
+      .preloader__element Загрузка
+    .site 
+      .header__area 
+        h1 Заголовок сайта
+
+        .theme-switch-wrapper
+          span.theme-label.light-label#lightLabel ☀️ Светлая
+          label.theme-switch
+            input(type="checkbox" id="themeToggle")
+            span.slider
+              span.slider-icons.icon-sun ☀️
+              span.slider-icons.icon-moon 🌙
+          span.theme-label.dark-label#darkLabel 🌙 Тёмная
+
+        
+        button.demo-btn#demoBtn  Демонстрация
+      .main 
+        .box3.w 
+          +svgmap
+
+
+      .footer__area
+      
+
+     
+
+
+
+
+  +scripts

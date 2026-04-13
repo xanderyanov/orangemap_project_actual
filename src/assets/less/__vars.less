@@ -1,0 +1,24 @@
+:root {
+  --dark: #050505;
+  --bright: #ffb20f;
+  --bright-gr: linear-gradient(180deg, #ffb20f 0%, #d78a00 100%);
+  --ff-gr: linear-gradient(180deg, #fffdfd 0%, #545454 100%);
+  --bg-gr: linear-gradient(180deg, #111 0%, #000 100%);
+  --gray: #636363;
+  --sh1: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.grayscale {
+  filter: grayscale(100%);
+}
+
+.visible {
+  visibility: visible !important;
+  opacity: 1 !important;
+}
+
+.clearfix::after {
+  content: "";
+  clear: both;
+  display: block;
+}

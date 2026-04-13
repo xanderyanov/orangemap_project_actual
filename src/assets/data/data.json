@@ -1,0 +1,144 @@
+{
+  "logo": "Site name",
+
+  "size": ["XS", "S", "M", "L", "XL", "XXL", "XXXL"],
+
+  "labels": {
+    "copy": {
+      "company": "© \"Company\" 2018",
+      "maker1": "Made with",
+      "maker2": "A1ex"
+    },
+    "error": {
+      "title": "Извините, но здесь ничего нет.",
+      "message": "<p>Неправильно набран адрес, или такой страницы больше не существует.</p><p>Чтобы продолжить работу с сайтом <a href='/'>вернитесь на главную страницу.</a></p>"
+    }
+  },
+  "xcatalog": [
+    {
+      "id": "0000001",
+      "title": "RA-AC0R02L",
+      "brand": "Orient",
+      "oldprice": 37990,
+      "price": 34990,
+      "content": "",
+      "img": "https://mirchasov64.ru/uploads/aaaclock/RA-AC0R02L.jpg"
+    },
+    {
+      "id": "0000002",
+      "title": "RA-AC0R03Y",
+      "brand": "Orient",
+      "oldprice": 0,
+      "price": 32990,
+      "content": "",
+      "img": "https://mirchasov64.ru/uploads/aaaclock/RA-AC0R03Y.jpg"
+    },
+    {
+      "id": "0000003",
+      "title": "FAG03001W",
+      "brand": "Orient",
+      "oldprice": 31990,
+      "price": 24990,
+      "content": "",
+      "img": "https://mirchasov64.ru/uploads/aaaclock/FAG03001W.jpg"
+    },
+    {
+      "id": "0000004",
+      "title": "DL6134SMB(WH)",
+      "brand": "Romanson",
+      "oldprice": 37990,
+      "price": 34990,
+      "content": "",
+      "img": "https://mirchasov64.ru/uploads/aaaclock/DL6134SMB(WH).jpg"
+    },
+    {
+      "id": "0000005",
+      "title": "RL0357UUR(WH)",
+      "brand": "Romanson",
+      "oldprice": 22990,
+      "price": 15990,
+      "content": "",
+      "img": "https://mirchasov64.ru/uploads/aaaclock/RL0357UUR(WH).jpg"
+    },
+    {
+      "id": "0000006",
+      "title": "10000-C",
+      "brand": "Wainer",
+      "oldprice": 37990,
+      "price": 34990,
+      "content": "",
+      "img": "https://mirchasov64.ru/uploads/aaaclock/10000-C.jpg"
+    },
+    {
+      "id": "0000007",
+      "title": "12948-B",
+      "brand": "Wainer",
+      "oldprice": 137990,
+      "price": 134990,
+      "content": "",
+      "img": "https://mirchasov64.ru/uploads/aaaclock/12948-B.jpg"
+    }
+  ],
+  "gallery1": [
+    {
+      "id": "321321321",
+      "title": "",
+      "content": "",
+      "img": "assets/img/gal/gal-1.jpg"
+    },
+    {
+      "id": "321321321",
+      "title": "",
+      "content": "",
+      "img": "assets/img/gal/gal-2.jpg"
+    },
+    {
+      "id": "321321321",
+      "title": "",
+      "content": "",
+      "img": "assets/img/gal/gal-3.jpg"
+    },
+    {
+      "id": "321321321",
+      "title": "",
+      "content": "",
+      "img": "assets/img/gal/gal-4.jpg"
+    },
+    {
+      "id": "321321321",
+      "title": "",
+      "content": "",
+      "img": "assets/img/gal/gal-5.jpg"
+    },
+    {
+      "id": "321321321",
+      "title": "",
+      "content": "",
+      "img": "assets/img/gal/gal-6.jpg"
+    },
+    {
+      "id": "321321321",
+      "title": "",
+      "content": "",
+      "img": "assets/img/gal/gal-7.jpg"
+    },
+    {
+      "id": "321321321",
+      "title": "",
+      "content": "",
+      "img": "assets/img/gal/gal-8.jpg"
+    },
+    {
+      "id": "321321321",
+      "title": "",
+      "content": "",
+      "img": "assets/img/gal/gal-9.jpg"
+    },
+    {
+      "id": "321321321",
+      "title": "",
+      "content": "",
+      "img": "assets/img/gal/gal-10.jpg"
+    }
+  ]
+}

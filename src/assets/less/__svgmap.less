@@ -1,0 +1,300 @@
+.svgMap__area {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  padding: 20px;
+}
+
+// ============================================================
+// ПАНЕЛЬ ФИЛЬТРОВ
+// ============================================================
+.filters {
+  display: flex;
+  justify-content: center;
+  gap: 15px;
+  margin-bottom: 25px;
+  flex-wrap: wrap;
+
+  .filter-btn {
+    padding: 10px 24px;
+    border: none;
+    border-radius: 30px;
+    background: #ffffff;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 500;
+    font-family: "Ubuntu", sans-serif;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    color: #333;
+
+    &:hover {
+      background: #164680;
+      color: #ffffff;
+      transform: translateY(-2px);
+    }
+
+    &.active {
+      background: #164680;
+      color: #ffffff;
+    }
+  }
+}
+
+// ============================================================
+// КОНТЕЙНЕР КАРТЫ
+// ============================================================
+.mapContainer {
+  background: #ffffff;
+  border-radius: 20px;
+  padding: 20px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+}
+
+#map-wrapper {
+  position: relative;
+  width: 100%;
+}
+
+#map-container {
+  position: relative;
+  width: 100%;
+  border: 2px solid #164680;
+  border-radius: 20px;
+  overflow: hidden;
+
+  svg {
+    width: 100%;
+    // height: auto;
+    display: block;
+    background: #fafafa;
+  }
+}
+
+// ============================================================
+// ПОПАП
+// ============================================================
+.popup {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.7);
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.popup-content {
+  background: #ffffff;
+  padding: 30px;
+  border-radius: 20px;
+  max-width: 400px;
+  width: 90%;
+  position: relative;
+  text-align: center;
+  animation: fadeIn 0.3s ease;
+}
+
+.close-btn {
+  position: absolute;
+  top: 15px;
+  right: 20px;
+  font-size: 28px;
+  cursor: pointer;
+  color: #999;
+  transition: color 0.2s;
+  line-height: 1;
+
+  &:hover {
+    color: #333;
+  }
+}
+
+.popup-title {
+  color: #164680;
+  margin-bottom: 15px;
+  font-size: 24px;
+  font-family: "Ubuntu", sans-serif;
+}
+
+.popup-desc {
+  color: #666;
+  line-height: 1.6;
+  margin-bottom: 15px;
+  font-family: "Ubuntu", sans-serif;
+}
+
+.popup-category {
+  display: inline-block;
+  padding: 6px 15px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 500;
+  font-family: "Ubuntu", sans-serif;
+  margin-bottom: 15px;
+
+  &.category-mag {
+    background: #fff3e0;
+    color: #ff9800;
+  }
+
+  &.category-off {
+    background: #e3f2fd;
+    color: #2196f3;
+  }
+
+  &.category-rest {
+    background: #e8f5e9;
+    color: #4caf50;
+  }
+}
+
+.popup-link-wrapper {
+  margin-top: 15px;
+  padding-top: 10px;
+  border-top: 1px solid #eee;
+}
+
+.popup-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  color: #164680;
+  text-decoration: none;
+  font-size: 14px;
+  font-weight: 500;
+  font-family: "Ubuntu", sans-serif;
+  transition: all 0.2s ease;
+
+  &:hover {
+    color: #ff9800;
+    gap: 8px;
+  }
+
+  &::after {
+    content: "→";
+    transition: transform 0.2s ease;
+  }
+
+  &:hover::after {
+    transform: translateX(3px);
+  }
+}
+
+// ============================================================
+// АНИМАЦИИ
+// ============================================================
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+// ============================================================
+// КНОПКИ ZOOM (svg-pan-zoom)
+// ============================================================
+// .svg-pan-zoom_controls {
+//   bottom: 20px;
+//   right: 20px;
+//   background: #ffffff;
+//   border-radius: 8px;
+//   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+//   overflow: hidden;
+// }
+
+// .svg-pan-zoom_control {
+//   width: 40px;
+//   height: 40px;
+//   background: #164680;
+//   color: #ffffff;
+//   font-size: 24px;
+//   font-weight: bold;
+//   border: none;
+//   cursor: pointer;
+
+//   &:hover {
+//     background: #0e2e57;
+//   }
+// }
+
+// // Улучшение тач-области на мобильных
+// @media (max-width: 768px) {
+//   .svg-pan-zoom_control {
+//     width: 48px !important;
+//     height: 48px !important;
+//     font-size: 28px !important;
+//   }
+// }
+
+/* Изменение текста на кнопках */
+// .svg-pan-zoom-zoom-in .svg-pan-zoom-control-element {
+//   /* Например, чтобы изменить текст кнопки "+", можно использовать псевдоэлемент,
+//        но надёжнее скрыть стандартный текст и добавить свой */
+// }
+
+// /* Более простой способ — скрыть стандартные иконки и задать фон с нужным текстом */
+// .svg-pan-zoom-zoom-in .svg-pan-zoom-control-background {
+//   display: none;
+// }
+
+// .svg-pan-zoom-zoom-in .svg-pan-zoom-control-element {
+//   fill: none;
+// }
+
+// .svg-pan-zoom-zoom-in {
+//   background: #164680;
+//   color: white;
+//   font-size: 24px;
+//   font-weight: bold;
+//   text-align: center;
+//   line-height: 40px;
+// }
+
+// /* Аналогично для других кнопок */
+// .svg-pan-zoom-zoom-out {
+//   background: #164680;
+//   color: white;
+// }
+// .svg-pan-zoom-reset-pan-zoom {
+//   background: #164680;
+//   color: white;
+// }
+
+// /* Скрываем текст внутри viewport элемента */
+// .svg-pan-zoom_viewport {
+//   /* Убираем возможные текстовые узлы */
+//   font-size: 0;
+//   line-height: 0;
+// }
+
+// /* Если текст появляется как содержимое псевдоэлемента */
+// .svg-pan-zoom_viewport::before,
+// .svg-pan-zoom_viewport::after {
+//   display: none !important;
+//   content: none !important;
+// }
+
+// /* Скрываем любые текстовые узлы внутри viewport */
+// .svg-pan-zoom_viewport * {
+//   font-size: 0;
+// }
+
+// /* Если ID динамический, скрываем по атрибуту id, начинающемуся с viewport- */
+// [id^="viewport-"] {
+//   font-size: 0;
+//   line-height: 0;
+// }
+
+// [id^="viewport-"]::before,
+// [id^="viewport-"]::after {
+//   display: none !important;
+// }
