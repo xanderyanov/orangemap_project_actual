@@ -383,50 +383,1169 @@ $(function () {
   // Это создает плавный, естественный переход между режимами движения
 })();
 
+const shopData = {
+  // ========== ПАВИЛЬОНЫ ==========
+  pav_korvetavto: {
+    name: "Корвет Авто",
+    namesize: 12,
+    desc: "Автосервис и автомойка.",
+    category: "pav",
+    link: "/ru/pavilions/korvetavto",
+    zoom: 1.8,
+  },
+  pav_reloud: {
+    name: "Reloud",
+    namesize: 12,
+    desc: "Магазин одежды и аксессуаров.",
+    category: "pav",
+    link: "/ru/pavilions/reloud",
+    zoom: 1.8,
+  },
+  pav_sayuri: {
+    name: "Sāyūri",
+    namesize: 12,
+    desc: "Японская кухня.",
+    category: "pav",
+    link: "/ru/pavilions/sayuri",
+    zoom: 1.8,
+  },
+  pav_cvetopt24: {
+    name: "ЦветОпт24",
+    namesize: 12,
+    desc: "Магазин цветов.",
+    category: "pav",
+    link: "/ru/pavilions/cvetopt24",
+    zoom: 1.8,
+  },
+
+  // ========== БАЗАР (Оранжевый базар) ==========
+  baz_mjasbery: {
+    name: "Мясной ряд",
+    namesize: 12,
+    desc: "Свежее мясо и колбасы.",
+    category: "baz",
+    link: "/ru/bazar/mjasbery",
+    zoom: 1.5,
+  },
+  baz_fanagoria: {
+    name: "Фанагория",
+    namesize: 12,
+    desc: "Вина и напитки.",
+    category: "baz",
+    link: "/ru/bazar/fanagoria",
+    zoom: 1.5,
+  },
+  baz_dombyta: {
+    name: "Дом быта",
+    namesize: 14,
+    desc: "Ремонт обуви, ключи, часы.",
+    category: "baz",
+    link: "/ru/bazar/dombyta",
+    zoom: 1.5,
+  },
+  baz_fabrikakachestva: {
+    name: "Фабрика качества",
+    namesize: 11,
+    desc: "Продукты питания.",
+    category: "baz",
+    link: "/ru/bazar/fabrikakachestva",
+    zoom: 1.5,
+  },
+  baz_frukti: {
+    name: "Фрукты",
+    namesize: 12,
+    desc: "Свежие фрукты и овощи.",
+    category: "baz",
+    link: "/ru/bazar/frukti",
+    zoom: 1.5,
+  },
+  baz_prodrynok: {
+    name: "Продуктовый рынок",
+    namesize: 12,
+    desc: "Продукты питания.",
+    category: "baz",
+    link: "/ru/bazar/prodrynok",
+    zoom: 1.5,
+  },
+  baz_kovry: {
+    name: "Ковры",
+    namesize: 14,
+    desc: "Магазин ковров.",
+    category: "baz",
+    link: "/ru/bazar/kovry",
+    zoom: 1.5,
+  },
+  baz_lapotok: {
+    name: "Лапоток",
+    namesize: 12,
+    desc: "Обувной магазин.",
+    category: "baz",
+    link: "/ru/bazar/lapotok",
+    zoom: 1.5,
+  },
+  baz_rio: {
+    name: "Рио",
+    namesize: 16,
+    desc: "Торговый центр.",
+    category: "baz",
+    link: "/ru/bazar/rio",
+    zoom: 1.5,
+  },
+  baz_neprospi: {
+    name: "Не проспи",
+    namesize: 11,
+    desc: "Магазин постельного белья.",
+    category: "baz",
+    link: "/ru/bazar/neprospi",
+    zoom: 1.5,
+  },
+  baz_moyakniga: {
+    name: "Моя книга",
+    namesize: 12,
+    desc: "Книжный магазин.",
+    category: "baz",
+    link: "/ru/bazar/moyakniga",
+    zoom: 1.5,
+  },
+  baz_bonifatsiy: {
+    name: "Бонифаций",
+    namesize: 12,
+    desc: "Зоотовары.",
+    category: "baz",
+    link: "/ru/bazar/bonifatsiy",
+    zoom: 1.5,
+  },
+  baz_fish: {
+    name: "Fish Market",
+    namesize: 12,
+    desc: "Рыбный рынок.",
+    category: "baz",
+    link: "/ru/bazar/fish",
+    zoom: 1.5,
+  },
+  baz_milkmir: {
+    name: "Молокомир",
+    namesize: 12,
+    desc: "Молочные продукты.",
+    category: "baz",
+    link: "/ru/bazar/milkmir",
+    zoom: 1.5,
+  },
+  baz_meat: {
+    name: "Мясной двор",
+    namesize: 12,
+    desc: "Мясные продукты.",
+    category: "baz",
+    link: "/ru/bazar/meat",
+    zoom: 1.5,
+  },
+
+  // ========== МАГАЗИНЫ ==========
+  mag_ashan: {
+    name: "Ашан",
+    namesize: 18,
+    desc: "Гипермаркет.",
+    category: "mag",
+    link: "/ru/shops/ashan",
+    zoom: 1.2,
+  },
+  mag_moscowloh: {
+    name: "Московские баранки",
+    namesize: 10,
+    desc: "Хлебобулочные изделия.",
+    category: "mag",
+    link: "/ru/shops/moscowloh",
+    zoom: 1.5,
+  },
+  mag_tobacconist: {
+    name: "Tobacconist",
+    namesize: 10,
+    desc: "Табачные изделия.",
+    category: "mag",
+    link: "/ru/shops/tobacconist",
+    zoom: 1.5,
+  },
+  mag_zolotoysoblazn: {
+    name: "Золотой соблазн",
+    namesize: 11,
+    desc: "Ювелирный магазин.",
+    category: "mag",
+    link: "/ru/shops/zolotoysoblazn",
+    zoom: 1.5,
+  },
+  mag_luxurystore: {
+    name: "Luxury Store",
+    namesize: 12,
+    desc: "Магазин люксовых товаров.",
+    category: "mag",
+    link: "/ru/shops/luxurystore",
+    zoom: 1.5,
+  },
+  mag_chainka: {
+    name: "Чайнка",
+    namesize: 12,
+    desc: "Чай и кофе.",
+    category: "mag",
+    link: "/ru/shops/chainka",
+    zoom: 1.5,
+  },
+  mag_4podarka: {
+    name: "4 подарка",
+    namesize: 12,
+    desc: "Подарки и сувениры.",
+    category: "mag",
+    link: "/ru/shops/4podarka",
+    zoom: 1.5,
+  },
+  mag_hlebnydvorik: {
+    name: "Хлебный дворик",
+    namesize: 11,
+    desc: "Хлебобулочные изделия.",
+    category: "mag",
+    link: "/ru/shops/hlebnydvorik",
+    zoom: 1.5,
+  },
+  mag_karnelia: {
+    name: "Карнелия",
+    namesize: 12,
+    desc: "Магазин украшений.",
+    category: "mag",
+    link: "/ru/shops/karnelia",
+    zoom: 1.5,
+  },
+  mag_dns: {
+    name: "DNS",
+    namesize: 18,
+    desc: "Цифровая техника.",
+    category: "mag",
+    link: "/ru/shops/dns",
+    zoom: 1.5,
+  },
+  mag_zolotti: {
+    name: "Золотти",
+    namesize: 12,
+    desc: "Ювелирный магазин.",
+    category: "mag",
+    link: "/ru/shops/zolotti",
+    zoom: 1.5,
+  },
+  mag_lero: {
+    name: "Леро",
+    namesize: 14,
+    desc: "Магазин одежды.",
+    category: "mag",
+    link: "/ru/shops/lero",
+    zoom: 1.5,
+  },
+  mag_ambrex: {
+    name: "Ambrex",
+    namesize: 12,
+    desc: "Парфюмерия.",
+    category: "mag",
+    link: "/ru/shops/ambrex",
+    zoom: 1.5,
+  },
+  mag_iqos: {
+    name: "IQOS",
+    namesize: 14,
+    desc: "Электронные сигареты.",
+    category: "mag",
+    link: "/ru/shops/iqos",
+    zoom: 1.5,
+  },
+  mag_lemoor: {
+    name: "Lemoor",
+    namesize: 14,
+    desc: "Магазин одежды.",
+    category: "mag",
+    link: "/ru/shops/lemoor",
+    zoom: 1.5,
+  },
+  mag_lauf: {
+    name: "Lauf",
+    namesize: 14,
+    desc: "Магазин обуви.",
+    category: "mag",
+    link: "/ru/shops/lauf",
+    zoom: 1.5,
+  },
+  mag_baden: {
+    name: "Baden",
+    namesize: 14,
+    desc: "Магазин одежды.",
+    category: "mag",
+    link: "/ru/shops/baden",
+    zoom: 1.5,
+  },
+  mag_makfine: {
+    name: "Makfine",
+    namesize: 14,
+    desc: "Магазин одежды.",
+    category: "mag",
+    link: "/ru/shops/makfine",
+    zoom: 1.5,
+  },
+  mag_vensi: {
+    name: "Vensi",
+    namesize: 14,
+    desc: "Магазин одежды.",
+    category: "mag",
+    link: "/ru/shops/vensi",
+    zoom: 1.5,
+  },
+  mag_textyleshop: {
+    name: "Textile Shop",
+    namesize: 12,
+    desc: "Текстиль и домашний декор.",
+    category: "mag",
+    link: "/ru/shops/textyleshop",
+    zoom: 1.5,
+  },
+  mag_kari: {
+    name: "Кари",
+    namesize: 18,
+    desc: "Магазин обуви.",
+    category: "mag",
+    link: "/ru/shops/kari",
+    zoom: 1.5,
+  },
+  mag_tabak: {
+    name: "Табак",
+    namesize: 14,
+    desc: "Табачные изделия.",
+    category: "mag",
+    link: "/ru/shops/tabak",
+    zoom: 1.5,
+  },
+  mag_officemag: {
+    name: "OfficeMag",
+    namesize: 12,
+    desc: "Канцелярские товары.",
+    category: "mag",
+    link: "/ru/shops/officemag",
+    zoom: 1.5,
+  },
+  mag_milavitsa: {
+    name: "Милавица",
+    namesize: 14,
+    desc: "Женское бельё.",
+    category: "mag",
+    link: "/ru/shops/milavitsa",
+    zoom: 1.5,
+  },
+  mag_modnayatochka: {
+    name: "Модная точка",
+    namesize: 12,
+    desc: "Магазин одежды.",
+    category: "mag",
+    link: "/ru/shops/modnayatochka",
+    zoom: 1.5,
+  },
+  mag_fitnessformula: {
+    name: "Fitness Formula",
+    namesize: 12,
+    desc: "Спортивное питание и одежда.",
+    category: "mag",
+    link: "/ru/shops/fitnessformula",
+    zoom: 1.5,
+  },
+  mag_letuale: {
+    name: "Летуаль",
+    namesize: 14,
+    desc: "Парфюмерия и косметика.",
+    category: "mag",
+    link: "/ru/shops/letuale",
+    zoom: 1.5,
+  },
+  mag_tvoe: {
+    name: "Твоё",
+    namesize: 14,
+    desc: "Магазин одежды.",
+    category: "mag",
+    link: "/ru/shops/tvoe",
+    zoom: 1.5,
+  },
+  mag_lenta: {
+    name: "Лента",
+    namesize: 18,
+    desc: "Гипермаркет.",
+    category: "mag",
+    link: "/ru/shops/lenta",
+    zoom: 1.2,
+  },
+  mag_acoola: {
+    name: "Акула",
+    namesize: 14,
+    desc: "Магазин одежды.",
+    category: "mag",
+    link: "/ru/shops/acoola",
+    zoom: 1.5,
+  },
+  mag_fresh: {
+    name: "Fresh",
+    namesize: 14,
+    desc: "Магазин одежды.",
+    category: "mag",
+    link: "/ru/shops/fresh",
+    zoom: 1.5,
+  },
+  mag_berloga: {
+    name: "Берлога",
+    namesize: 14,
+    desc: "Магазин одежды.",
+    category: "mag",
+    link: "/ru/shops/berloga",
+    zoom: 1.5,
+  },
+  mag_koreyanka: {
+    name: "Кореянка",
+    namesize: 12,
+    desc: "Корейская косметика.",
+    category: "mag",
+    link: "/ru/shops/koreyanka",
+    zoom: 1.5,
+  },
+  mag_lone: {
+    name: "Lone",
+    namesize: 14,
+    desc: "Магазин одежды.",
+    category: "mag",
+    link: "/ru/shops/lone",
+    zoom: 1.5,
+  },
+  mag_loyeshop: {
+    name: "Loye Shop",
+    namesize: 12,
+    desc: "Магазин одежды.",
+    category: "mag",
+    link: "/ru/shops/loyeshop",
+    zoom: 1.5,
+  },
+  mag_sportmaster: {
+    name: "Спортмастер",
+    namesize: 14,
+    desc: "Спортивные товары.",
+    category: "mag",
+    link: "/ru/shops/sportmaster",
+    zoom: 1.5,
+  },
+  mag_bretelka: {
+    name: "Бретелка",
+    namesize: 12,
+    desc: "Магазин одежды.",
+    category: "mag",
+    link: "/ru/shops/bretelka",
+    zoom: 1.5,
+  },
+  mag_moko: {
+    name: "Moko",
+    namesize: 14,
+    desc: "Магазин одежды.",
+    category: "mag",
+    link: "/ru/shops/moko",
+    zoom: 1.5,
+  },
+  mag_ostin: {
+    name: "Ostin",
+    namesize: 14,
+    desc: "Магазин одежды.",
+    category: "mag",
+    link: "/ru/shops/ostin",
+    zoom: 1.5,
+  },
+  mag_jarastu: {
+    name: "Jarastu",
+    namesize: 12,
+    desc: "Магазин одежды.",
+    category: "mag",
+    link: "/ru/shops/jarastu",
+    zoom: 1.5,
+  },
+  mag_jarastu2: {
+    name: "Jarastu",
+    namesize: 12,
+    desc: "Магазин одежды.",
+    category: "mag",
+    link: "/ru/shops/jarastu",
+    zoom: 1.5,
+  },
+  mag_novijvzglad: {
+    name: "Новый взгляд",
+    namesize: 12,
+    desc: "Оптика.",
+    category: "mag",
+    link: "/ru/shops/novijvzglad",
+    zoom: 1.5,
+  },
+  mag_plintushall: {
+    name: "Плинтусхолл",
+    namesize: 11,
+    desc: "Строительные материалы.",
+    category: "mag",
+    link: "/ru/shops/plintushall",
+    zoom: 1.5,
+  },
+  mag_apelsinchik: {
+    name: "Апельсинчик",
+    namesize: 12,
+    desc: "Магазин одежды.",
+    category: "mag",
+    link: "/ru/shops/apelsinchik",
+    zoom: 1.5,
+  },
+  mag_apelsinchikobuv: {
+    name: "Апельсинчик",
+    namesize: 12,
+    desc: "Магазин обуви.",
+    category: "mag",
+    link: "/ru/shops/apelsinchikobuv",
+    zoom: 1.5,
+  },
+  mag_myseason: {
+    name: "My Season",
+    namesize: 12,
+    desc: "Магазин одежды.",
+    category: "mag",
+    link: "/ru/shops/myseason",
+    zoom: 1.5,
+  },
+  mag_podruzhka: {
+    name: "Подружка",
+    namesize: 14,
+    desc: "Косметика и аксессуары.",
+    category: "mag",
+    link: "/ru/shops/podruzhka",
+    zoom: 1.5,
+  },
+  mag_serge: {
+    name: "Serge",
+    namesize: 14,
+    desc: "Магазин одежды.",
+    category: "mag",
+    link: "/ru/shops/serge",
+    zoom: 1.5,
+  },
+  mag_ptrv: {
+    name: "PTRV",
+    namesize: 14,
+    desc: "Магазин одежды.",
+    category: "mag",
+    link: "/ru/shops/ptrv",
+    zoom: 1.5,
+  },
+  mag_astore: {
+    name: "AStore",
+    namesize: 14,
+    desc: "Магазин одежды.",
+    category: "mag",
+    link: "/ru/shops/astore",
+    zoom: 1.5,
+  },
+  mag_perfumer: {
+    name: "Perfumer",
+    namesize: 12,
+    desc: "Парфюмерия.",
+    category: "mag",
+    link: "/ru/shops/perfumer",
+    zoom: 1.5,
+  },
+  mag_eyfel: {
+    name: "Эйфель",
+    namesize: 14,
+    desc: "Магазин одежды.",
+    category: "mag",
+    link: "/ru/shops/eyfel",
+    zoom: 1.5,
+  },
+  mag_symfonykrasoty: {
+    name: "Симфония красоты",
+    namesize: 11,
+    desc: "Косметика и парфюмерия.",
+    category: "mag",
+    link: "/ru/shops/symfonykrasoty",
+    zoom: 1.5,
+  },
+  mag_mtc: {
+    name: "МТС",
+    namesize: 18,
+    desc: "Салон связи.",
+    category: "mag",
+    link: "/ru/shops/mtc",
+    zoom: 1.5,
+  },
+  mag_yablonka: {
+    name: "Яблонька",
+    namesize: 14,
+    desc: "Магазин одежды.",
+    category: "mag",
+    link: "/ru/shops/yablonka",
+    zoom: 1.5,
+  },
+  mag_yablonka2: {
+    name: "Яблонька",
+    namesize: 14,
+    desc: "Магазин одежды.",
+    category: "mag",
+    link: "/ru/shops/yablonka",
+    zoom: 1.5,
+  },
+  mag_glorya: {
+    name: "Glorya Jeans",
+    namesize: 12,
+    desc: "Магазин одежды.",
+    category: "mag",
+    link: "/ru/shops/glorya",
+    zoom: 1.5,
+  },
+  mag_fishkafish: {
+    name: "Fishka Fish",
+    namesize: 11,
+    desc: "Рыбный магазин.",
+    category: "mag",
+    link: "/ru/shops/fishkafish",
+    zoom: 1.5,
+  },
+  mag_pinacolada: {
+    name: "Pina Colada",
+    namesize: 12,
+    desc: "Магазин одежды.",
+    category: "mag",
+    link: "/ru/shops/pinacolada",
+    zoom: 1.5,
+  },
+  mag_purpur: {
+    name: "Purpur",
+    namesize: 14,
+    desc: "Магазин одежды.",
+    category: "mag",
+    link: "/ru/shops/purpur",
+    zoom: 1.5,
+  },
+  mag_ortos: {
+    name: "Ортос",
+    namesize: 14,
+    desc: "Ортопедические товары.",
+    category: "mag",
+    link: "/ru/shops/ortos",
+    zoom: 1.5,
+  },
+  mag_mvideo: {
+    name: "М.Видео",
+    namesize: 16,
+    desc: "Цифровая и бытовая техника.",
+    category: "mag",
+    link: "/ru/shops/mvideo",
+    zoom: 1.5,
+  },
+  mag_bogatto: {
+    name: "Bogatto",
+    namesize: 14,
+    desc: "Магазин одежды.",
+    category: "mag",
+    link: "/ru/shops/bogatto",
+    zoom: 1.5,
+  },
+  mag_oodji: {
+    name: "Oodji",
+    namesize: 14,
+    desc: "Магазин одежды.",
+    category: "mag",
+    link: "/ru/shops/oodji",
+    zoom: 1.5,
+  },
+  mag_zolla: {
+    name: "Zolla",
+    namesize: 14,
+    desc: "Магазин одежды.",
+    category: "mag",
+    link: "/ru/shops/zolla",
+    zoom: 1.5,
+  },
+  mag_ivroshe: {
+    name: "Ив Роше",
+    namesize: 14,
+    desc: "Косметика и уход.",
+    category: "mag",
+    link: "/ru/shops/ivroshe",
+    zoom: 1.5,
+  },
+  mag_orient: {
+    name: "Orient",
+    namesize: 14,
+    desc: "Магазин одежды.",
+    category: "mag",
+    link: "/ru/shops/orient",
+    zoom: 1.5,
+  },
+  mag_mirch: {
+    name: "Mirch",
+    namesize: 14,
+    desc: "Магазин одежды.",
+    category: "mag",
+    link: "/ru/shops/mirch",
+    zoom: 1.5,
+  },
+  mag_casio: {
+    name: "Casio",
+    namesize: 16,
+    desc: "Часы и калькуляторы.",
+    category: "mag",
+    link: "/ru/shops/casio",
+    zoom: 1.5,
+  },
+  mag_donedevaro: {
+    name: "Done De Varo",
+    namesize: 11,
+    desc: "Магазин одежды.",
+    category: "mag",
+    link: "/ru/shops/donedevaro",
+    zoom: 1.5,
+  },
+  mag_donedevaro2: {
+    name: "Done De Varo",
+    namesize: 11,
+    desc: "Магазин одежды.",
+    category: "mag",
+    link: "/ru/shops/donedevaro",
+    zoom: 1.5,
+  },
+  mag_pedant: {
+    name: "Pedant",
+    namesize: 14,
+    desc: "Ювелирный магазин.",
+    category: "mag",
+    link: "/ru/shops/pedant",
+    zoom: 1.5,
+  },
+  mag_ogawa: {
+    name: "Ogawa",
+    namesize: 14,
+    desc: "Магазин одежды.",
+    category: "mag",
+    link: "/ru/shops/ogawa",
+    zoom: 1.5,
+  },
+  mag_shaplandia: {
+    name: "Shaplandia",
+    namesize: 12,
+    desc: "Магазин одежды.",
+    category: "mag",
+    link: "/ru/shops/shaplandia",
+    zoom: 1.5,
+  },
+  mag_colorme: {
+    name: "Color Me",
+    namesize: 14,
+    desc: "Косметика.",
+    category: "mag",
+    link: "/ru/shops/colorme",
+    zoom: 1.5,
+  },
+  mag_milazlata: {
+    name: "Мила Злата",
+    namesize: 12,
+    desc: "Ювелирный магазин.",
+    category: "mag",
+    link: "/ru/shops/milazlata",
+    zoom: 1.5,
+  },
+  mag_belvest: {
+    name: "Belvest",
+    namesize: 14,
+    desc: "Магазин одежды.",
+    category: "mag",
+    link: "/ru/shops/belvest",
+    zoom: 1.5,
+  },
+  mag_imperiasumok: {
+    name: "Империя сумок",
+    namesize: 12,
+    desc: "Магазин сумок и аксессуаров.",
+    category: "mag",
+    link: "/ru/shops/imperiasumok",
+    zoom: 1.5,
+  },
+  mag_brosko: {
+    name: "Броско",
+    namesize: 14,
+    desc: "Магазин одежды.",
+    category: "mag",
+    link: "/ru/shops/brosko",
+    zoom: 1.5,
+  },
+  mag_businessline: {
+    name: "Business Line",
+    namesize: 12,
+    desc: "Магазин одежды.",
+    category: "mag",
+    link: "/ru/shops/businessline",
+    zoom: 1.5,
+  },
+  mag_momento: {
+    name: "Momento",
+    namesize: 14,
+    desc: "Магазин одежды.",
+    category: "mag",
+    link: "/ru/shops/momento",
+    zoom: 1.5,
+  },
+  mag_afrodita: {
+    name: "Афродита",
+    namesize: 12,
+    desc: "Магазин косметики и парфюмерии.",
+    category: "mag",
+    link: "/ru/shops/afrodita",
+    zoom: 1.8,
+  },
+  mag_rafam: {
+    name: "Rafam",
+    namesize: 14,
+    desc: "Магазин одежды.",
+    category: "mag",
+    link: "/ru/shops/rafam",
+    zoom: 1.5,
+  },
+  mag_secondhand: {
+    name: "Second Hand",
+    namesize: 14,
+    desc: "Магазин одежды из Европы.",
+    category: "mag",
+    link: "/ru/shops/secondhand",
+    zoom: 1.8,
+  },
+  mag_domashny: {
+    name: "Домашний",
+    namesize: 12,
+    desc: "Товары для дома.",
+    category: "mag",
+    link: "/ru/shops/domashny",
+    zoom: 1.5,
+  },
+
+  // ========== РЕСТОРАНЫ И КАФЕ ==========
+  rest_juju: {
+    name: "Juju",
+    namesize: 16,
+    desc: "Ресторан.",
+    category: "rest",
+    link: "/ru/restaurants/juju",
+    zoom: 1.8,
+  },
+  rest_cofeeshokolad: {
+    name: "Кофе и шоколад",
+    namesize: 12,
+    desc: "Кафе.",
+    category: "rest",
+    link: "/ru/restaurants/cofeeshokolad",
+    zoom: 1.5,
+  },
+  rest_marmelad: {
+    name: "Мармелад",
+    namesize: 14,
+    desc: "Кафе.",
+    category: "rest",
+    link: "/ru/restaurants/marmelad",
+    zoom: 1.8,
+  },
+  rest_coffee: {
+    name: "Coffee",
+    namesize: 14,
+    desc: "Кофейня.",
+    category: "rest",
+    link: "/ru/restaurants/coffee",
+    zoom: 1.8,
+  },
+  rest_phobo: {
+    name: "Phobo",
+    namesize: 16,
+    desc: "Ресторан.",
+    category: "rest",
+    link: "/ru/restaurants/phobo",
+    zoom: 1.8,
+  },
+  rest_adana: {
+    name: "Adana",
+    namesize: 16,
+    desc: "Турецкая кухня.",
+    category: "rest",
+    link: "/ru/restaurants/adana",
+    zoom: 1.8,
+  },
+  rest_cactus: {
+    name: "Кактус",
+    namesize: 14,
+    desc: "Ресторан.",
+    category: "rest",
+    link: "/ru/restaurants/cactus",
+    zoom: 1.8,
+  },
+  rest_blinnaya: {
+    name: "Блинная",
+    namesize: 14,
+    desc: "Блинная.",
+    category: "rest",
+    link: "/ru/restaurants/blinnaya",
+    zoom: 1.8,
+  },
+  rest_shashlykdvorik: {
+    name: "Шашлык дворик",
+    namesize: 11,
+    desc: "Шашлычная.",
+    category: "rest",
+    link: "/ru/restaurants/shashlykdvorik",
+    zoom: 1.8,
+  },
+  rest_miapizza: {
+    name: "Mia Pizza",
+    namesize: 14,
+    desc: "Пиццерия.",
+    category: "rest",
+    link: "/ru/restaurants/miapizza",
+    zoom: 1.8,
+  },
+  rest_vkusnoitochka: {
+    name: "Вкусно и точка",
+    namesize: 12,
+    desc: "Фастфуд.",
+    category: "rest",
+    link: "/ru/restaurants/vkusnoitochka",
+    zoom: 1.8,
+  },
+  rest_rostics: {
+    name: "Ростик's",
+    namesize: 14,
+    desc: "Фастфуд.",
+    category: "rest",
+    link: "/ru/restaurants/rostics",
+    zoom: 1.8,
+  },
+  rest_vkustydomik: {
+    name: "Вкусы домик",
+    namesize: 11,
+    desc: "Кафе.",
+    category: "rest",
+    link: "/ru/restaurants/vkustydomik",
+    zoom: 1.5,
+  },
+
+  // ========== УСЛУГИ И ОФИСЫ ==========
+  serv_coraltravel: {
+    name: "Coral Travel",
+    namesize: 12,
+    desc: "Туристическое агентство.",
+    category: "serv",
+    link: "/ru/services/coraltravel",
+    zoom: 1.8,
+  },
+  serv_lego: {
+    name: "Lego",
+    namesize: 18,
+    desc: "Детский центр.",
+    category: "serv",
+    link: "/ru/services/lego",
+    zoom: 1.8,
+  },
+  serv_otrovsharov: {
+    name: "Остров шаров",
+    namesize: 12,
+    desc: "Праздничное оформление.",
+    category: "serv",
+    link: "/ru/services/otrovsharov",
+    zoom: 1.8,
+  },
+  serv_8dkino: {
+    name: "8D кино",
+    namesize: 14,
+    desc: "Кинотеатр.",
+    category: "serv",
+    link: "/ru/services/8dkino",
+    zoom: 1.8,
+  },
+  serv_mamaboss: {
+    name: "Mama Boss",
+    namesize: 14,
+    desc: "Детский центр.",
+    category: "serv",
+    link: "/ru/services/mamaboss",
+    zoom: 1.8,
+  },
+  serv_fotoburo: {
+    name: "Фотобюро",
+    namesize: 14,
+    desc: "Фотоуслуги.",
+    category: "serv",
+    link: "/ru/services/fotoburo",
+    zoom: 1.5,
+  },
+  serv_centrjuvelir: {
+    name: "Центр ювелир",
+    namesize: 12,
+    desc: "Ремонт ювелирных изделий.",
+    category: "serv",
+    link: "/ru/services/centrjuvelir",
+    zoom: 1.5,
+  },
+  serv_horoshayasvyaz: {
+    name: "Хорошая связь",
+    namesize: 11,
+    desc: "Ремонт телефонов.",
+    category: "serv",
+    link: "/ru/services/horoshayasvyaz",
+    zoom: 1.5,
+  },
+  serv_tele2: {
+    name: "Tele2",
+    namesize: 16,
+    desc: "Салон связи.",
+    category: "serv",
+    link: "/ru/services/tele2",
+    zoom: 1.5,
+  },
+  serv_yota: {
+    name: "Yota",
+    namesize: 16,
+    desc: "Салон связи.",
+    category: "serv",
+    link: "/ru/services/yota",
+    zoom: 1.5,
+  },
+  serv_sogaz: {
+    name: "Согаз",
+    namesize: 16,
+    desc: "Страховая компания.",
+    category: "serv",
+    link: "/ru/services/sogaz",
+    zoom: 1.5,
+  },
+  serv_bankomats: {
+    name: "Банкоматы",
+    namesize: 12,
+    desc: "Банкоматы.",
+    category: "serv",
+    link: "/ru/services/bankomats",
+    zoom: 1.5,
+  },
+  serv_sber: {
+    name: "Сбербанк",
+    namesize: 16,
+    desc: "Банк.",
+    category: "serv",
+    link: "/ru/services/sber",
+    zoom: 1.5,
+  },
+  serv_rosselhozbank: {
+    name: "Россельхозбанк",
+    namesize: 12,
+    desc: "Банк.",
+    category: "serv",
+    link: "/ru/services/rosselhozbank",
+    zoom: 1.5,
+  },
+  serv_bankavangard: {
+    name: "Банк Авангард",
+    namesize: 12,
+    desc: "Банк.",
+    category: "serv",
+    link: "/ru/services/bankavangard",
+    zoom: 1.5,
+  },
+  serv_beeline: {
+    name: "Билайн",
+    namesize: 16,
+    desc: "Салон связи.",
+    category: "serv",
+    link: "/ru/services/beeline",
+    zoom: 1.5,
+  },
+  serv_megafon: {
+    name: "Мегафон",
+    namesize: 16,
+    desc: "Салон связи.",
+    category: "serv",
+    link: "/ru/services/megafon",
+    zoom: 1.5,
+  },
+  serv_mts2: {
+    name: "МТС",
+    namesize: 16,
+    desc: "Салон связи.",
+    category: "serv",
+    link: "/ru/services/mts",
+    zoom: 1.5,
+  },
+  serv_viking: {
+    name: "Викинг",
+    namesize: 16,
+    desc: "Спортивный клуб.",
+    category: "serv",
+    link: "/ru/services/viking",
+    zoom: 1.5,
+  },
+  serv_fightclub: {
+    name: "Fight Club",
+    namesize: 14,
+    desc: "Спортивный клуб.",
+    category: "serv",
+    link: "/ru/services/fightclub",
+    zoom: 1.5,
+  },
+  serv_dnaceacademy: {
+    name: "Dance Academy",
+    namesize: 12,
+    desc: "Танцевальная школа.",
+    category: "serv",
+    link: "/ru/services/dnaceacademy",
+    zoom: 1.5,
+  },
+  serv_poligonarean: {
+    name: "Полигон Ариан",
+    namesize: 11,
+    desc: "Страйкбол/пейнтбол.",
+    category: "serv",
+    link: "/ru/services/poligonarean",
+    zoom: 1.5,
+  },
+  serv_mfc: {
+    name: "МФЦ",
+    namesize: 18,
+    desc: "Многофункциональный центр услуг.",
+    category: "serv",
+    link: "/ru/services/mfc",
+    zoom: 1.5,
+  },
+  serv_burouslug: {
+    name: "Бюро услуг",
+    namesize: 12,
+    desc: "Услуги населению.",
+    category: "serv",
+    link: "/ru/services/burouslug",
+    zoom: 1.5,
+  },
+  serv_avtoshkola: {
+    name: "Автошкола",
+    namesize: 12,
+    desc: "Обучение вождению.",
+    category: "serv",
+    link: "/ru/services/avtoshkola",
+    zoom: 1.8,
+  },
+  serv_maksyuta: {
+    name: "Максюта",
+    namesize: 14,
+    desc: "Стоматология.",
+    category: "serv",
+    link: "/ru/services/maksyuta",
+    zoom: 1.5,
+  },
+};
+
+// main.js
 document.addEventListener("DOMContentLoaded", function () {
-  // ========== ДАННЫЕ О МАГАЗИНАХ (с zoom для каждого) ==========
-  const shopData = {
-    pav_afrodita: {
-      name: "Афродита",
-      namesize: 12,
-      desc: "Магазин косметики и парфюмерии.",
-      category: "mag",
-      link: "/ru/shops/afrodita",
-      zoom: 2.0,
-    },
-    mag_secondhand: {
-      name: "Second Hand",
-      namesize: 14,
-      desc: "Магазин одежды из Европы.",
-      category: "mag",
-      link: "/ru/shops/secondhand",
-      zoom: 2.0,
-    },
-    serv_mfc: {
-      name: "ФСО",
-      namesize: 28,
-      desc: "Многофункциональный центр услуг.",
-      category: "off",
-      link: "/ru/offices/mfc",
-      zoom: 1.5,
-    },
-    rest_bmw: {
-      name: "BMW AutoShow",
-      namesize: 16,
-      desc: "Автосалон BMW.",
-      category: "off",
-      link: "/ru/offices/bmw",
-      zoom: 1.8,
-    },
-    baz_bq: {
-      name: "BQ Burger",
-      namesize: 10,
-      desc: "Ресторан быстрого питания.",
-      category: "rest",
-      link: "/ru/restaurants/bq",
-      zoom: 2.5,
-    },
-  };
+  // ========== ПРОВЕРКА, ЧТО shopData ЗАГРУЖЕН ==========
+  if (typeof shopData === "undefined") {
+    console.error("shopData не загружен! Подключите shop-data.js перед этим файлом.");
+    return;
+  }
 
   // ========== НАХОДИМ ЭЛЕМЕНТЫ ==========
   const svgElement = document.querySelector("#map-container svg");
@@ -447,7 +1566,7 @@ document.addEventListener("DOMContentLoaded", function () {
             controlIconsEnabled: true,
             fit: true,
             center: true,
-            minZoom: 0.5,
+            minZoom: 0.3,
             maxZoom: 5,
             zoomScaleSensitivity: 0.2,
           });
@@ -469,6 +1588,8 @@ document.addEventListener("DOMContentLoaded", function () {
   // ========== ПЕРЕМЕННЫЕ ДЛЯ ОБРАБОТКИ СОБЫТИЙ ==========
   let touchTimer = null;
   let isPanning = false;
+  let currentFilter = "all";
+  let highlightedShopId = null;
 
   // ========== ЦВЕТА ДЛЯ КАТЕГОРИЙ ==========
   const categoryStyle = {
@@ -478,7 +1599,7 @@ document.addEventListener("DOMContentLoaded", function () {
       originalFill: "#fce4ec",
       hoverFill: "#fff3e0",
       filterFill: "#fff8e1",
-      highlightFill: "#ffe0b2", // цвет для подсветки выбранного магазина
+      highlightFill: "#ffe0b2",
     },
     serv: {
       name: "Услуги и сервис",
@@ -486,7 +1607,7 @@ document.addEventListener("DOMContentLoaded", function () {
       originalFill: "#e3f2fd",
       hoverFill: "#e8f4fd",
       filterFill: "#e8f4fd",
-      highlightFill: "#bbdefb", // цвет для подсветки выбранного магазина
+      highlightFill: "#bbdefb",
     },
     rest: {
       name: "Ресторан",
@@ -494,50 +1615,49 @@ document.addEventListener("DOMContentLoaded", function () {
       originalFill: "#e8f5e9",
       hoverFill: "#f1f8e9",
       filterFill: "#f1f8e9",
-      highlightFill: "#c8e6c9", // цвет для подсветки выбранного магазина
+      highlightFill: "#c8e6c9",
     },
     baz: {
       name: "Оранжевый базар",
-      icon: "🍽️",
-      originalFill: "#e8f5e9",
-      hoverFill: "#f1f8e9",
-      filterFill: "#f1f8e9",
-      highlightFill: "#c8e6c9", // цвет для подсветки выбранного магазина
+      icon: "🛒",
+      originalFill: "#fff8e1",
+      hoverFill: "#fff9c4",
+      filterFill: "#fff9c4",
+      highlightFill: "#fff59d",
     },
     pav: {
       name: "Павильон",
-      icon: "🍽️",
-      originalFill: "#e8f5e9",
-      hoverFill: "#f1f8e9",
-      filterFill: "#f1f8e9",
-      highlightFill: "#c8e6c9", // цвет для подсветки выбранного магазина
+      icon: "🏪",
+      originalFill: "#f3e5f5",
+      hoverFill: "#f3e5f5",
+      filterFill: "#f3e5f5",
+      highlightFill: "#e1bee7",
+    },
+    off: {
+      name: "Офис",
+      icon: "🏢",
+      originalFill: "#e0f7fa",
+      hoverFill: "#e0f7fa",
+      filterFill: "#e0f7fa",
+      highlightFill: "#b2ebf2",
     },
   };
 
-  function getHighlightFill(category) {
-    return categoryStyle[category]?.highlightFill || "#ffe0b2";
+  // ========== ВСПОМОГАТЕЛЬНЫЕ ФУНКЦИИ ==========
+
+  // Проверяет, соответствует ли shop выбранной категории
+  function matchesCategory(shopCategoryAttr, selectedCategory) {
+    if (selectedCategory === "all") return true;
+    if (!shopCategoryAttr) return false;
+
+    const categories = shopCategoryAttr.split(",").map(cat => cat.trim());
+    return categories.includes(selectedCategory);
   }
 
-  // ========== СОХРАНЕНИЕ ОРИГИНАЛЬНЫХ ЦВЕТОВ ==========
-  function saveOriginalColors() {
-    allShops.forEach(shop => {
-      const shopCategory = shop.getAttribute("data-category");
-      const shapes = shop.querySelectorAll("path:not(.text-label)");
-
-      shapes.forEach(path => {
-        const existingFill = path.getAttribute("fill");
-        let originalFill;
-
-        if (existingFill && existingFill !== "#fcf2eb") {
-          originalFill = existingFill;
-        } else {
-          originalFill = categoryStyle[shopCategory]?.originalFill || "#fcf2eb";
-        }
-
-        path.setAttribute("data-original-fill", originalFill);
-        path.style.fill = originalFill;
-      });
-    });
+  // Получает первую категорию из атрибута
+  function getFirstCategory(shopCategoryAttr) {
+    if (!shopCategoryAttr) return null;
+    return shopCategoryAttr.split(",")[0].trim();
   }
 
   function getHoverFill(category) {
@@ -548,13 +1668,49 @@ document.addEventListener("DOMContentLoaded", function () {
     return categoryStyle[category]?.filterFill || "#f5f5f5";
   }
 
-  saveOriginalColors();
+  function getHighlightFill(shopCategoryAttr) {
+    if (!shopCategoryAttr) return "#ffe0b2";
+    const firstCategory = getFirstCategory(shopCategoryAttr);
+    return categoryStyle[firstCategory]?.highlightFill || "#ffe0b2";
+  }
+
+  function getCategoryText(category) {
+    const texts = {
+      mag: "🛍️ Магазин",
+      serv: "🏢 Услуги",
+      rest: "🍽️ Ресторан",
+      baz: "🛒 Оранжевый базар",
+      pav: "🏪 Павильон",
+      off: "🏢 Офис",
+    };
+    return texts[category] || category;
+  }
+
+  // ========== СОХРАНЕНИЕ ОРИГИНАЛЬНЫХ ЦВЕТОВ ==========
+  function saveOriginalColors() {
+    allShops.forEach(shop => {
+      const shopCategoryAttr = shop.getAttribute("data-category");
+      const shapes = shop.querySelectorAll("path:not(.text-label)");
+
+      shapes.forEach(path => {
+        const existingFill = path.getAttribute("fill");
+        let originalFill;
+
+        if (existingFill && existingFill !== "#fcf2eb") {
+          originalFill = existingFill;
+        } else {
+          const firstCategory = getFirstCategory(shopCategoryAttr);
+          originalFill = categoryStyle[firstCategory]?.originalFill || "#fcf2eb";
+        }
+
+        path.setAttribute("data-original-fill", originalFill);
+        path.style.fill = originalFill;
+      });
+    });
+  }
 
   // ========== ПОДСВЕТКА КОНКРЕТНОГО МАГАЗИНА ==========
-  let highlightedShopId = null;
-
   function highlightShop(shopId) {
-    // Сначала сбрасываем подсветку у всех магазинов
     allShops.forEach(shop => {
       const shapes = shop.querySelectorAll("path:not(.text-label)");
       const originalFill = shop.getAttribute("data-original-fill");
@@ -563,13 +1719,16 @@ document.addEventListener("DOMContentLoaded", function () {
       });
     });
 
-    if (!shopId) return;
+    if (!shopId) {
+      highlightedShopId = null;
+      return;
+    }
 
     const shop = document.getElementById(shopId);
     if (!shop) return;
 
-    const shopCategory = shop.getAttribute("data-category");
-    const highlightColor = getHighlightFill(shopCategory);
+    const shopCategoryAttr = shop.getAttribute("data-category");
+    const highlightColor = getHighlightFill(shopCategoryAttr);
     const shapes = shop.querySelectorAll("path:not(.text-label)");
 
     shapes.forEach(shape => {
@@ -578,91 +1737,6 @@ document.addEventListener("DOMContentLoaded", function () {
 
     highlightedShopId = shopId;
   }
-
-  // ========== ОБРАБОТЧИКИ ДЛЯ МАГАЗИНОВ ==========
-  allShops.forEach(shop => {
-    shop.style.cursor = "pointer";
-
-    shop.addEventListener("click", event => {
-      event.stopPropagation();
-      const shopId = shop.id;
-      const data = shopData[shopId];
-      if (data) showPopup(shopId);
-    });
-
-    shop.addEventListener("touchstart", e => {
-      e.stopPropagation();
-      touchTimer = setTimeout(() => {
-        isPanning = true;
-      }, 200);
-    });
-
-    shop.addEventListener("touchend", e => {
-      e.stopPropagation();
-      if (touchTimer) {
-        clearTimeout(touchTimer);
-        touchTimer = null;
-      }
-      if (!isPanning) {
-        e.preventDefault();
-        const shopId = shop.id;
-        const data = shopData[shopId];
-        if (data) showPopup(shopId);
-      }
-      isPanning = false;
-    });
-
-    shop.addEventListener("touchmove", e => {
-      if (touchTimer) {
-        clearTimeout(touchTimer);
-        touchTimer = null;
-        isPanning = true;
-      }
-    });
-
-    shop.addEventListener("mouseenter", () => {
-      const shopCategory = shop.getAttribute("data-category");
-      const isInactive = currentFilter !== "all" && shopCategory !== currentFilter;
-      if (isInactive) return;
-
-      const shapes = shop.querySelectorAll("path:not(.text-label)");
-      const hoverColor = getHoverFill(shopCategory);
-      shapes.forEach(shape => {
-        shape.style.fill = hoverColor;
-      });
-      shop.style.transition = "all 0.2s ease";
-    });
-
-    shop.addEventListener("mouseleave", () => {
-      const shopCategory = shop.getAttribute("data-category");
-      const shapes = shop.querySelectorAll("path:not(.text-label)");
-      const isInactive = currentFilter !== "all" && shopCategory !== currentFilter;
-
-      if (isInactive) {
-        shapes.forEach(shape => {
-          shape.style.fill = shape.getAttribute("data-original-fill") || "#fcf2eb";
-        });
-        shop.style.filter = "grayscale(0.7) brightness(0.6)";
-      } else if (currentFilter !== "all" && shopCategory === currentFilter) {
-        shapes.forEach(shape => {
-          shape.style.fill = getFilterFill(shopCategory);
-        });
-        shop.style.filter = "drop-shadow(0 0 3px rgba(0,0,0,0.2))";
-      } else {
-        // Если это подсвеченный магазин, возвращаем цвет подсветки, а не оригинальный
-        if (shop.id === highlightedShopId) {
-          shapes.forEach(shape => {
-            shape.style.fill = getHighlightFill(shopCategory);
-          });
-        } else {
-          shapes.forEach(shape => {
-            shape.style.fill = shape.getAttribute("data-original-fill") || "#fcf2eb";
-          });
-        }
-        shop.style.filter = "none";
-      }
-    });
-  });
 
   // ========== ФУНКЦИЯ ПОКАЗА ПОПАПА ==========
   function showPopup(shopId) {
@@ -675,10 +1749,12 @@ document.addEventListener("DOMContentLoaded", function () {
     const popupCategory = document.getElementById("popup-category-tag");
     const popupLink = document.getElementById("popup-link");
 
-    popupTitle.textContent = data.name;
-    popupDesc.textContent = data.desc;
-    popupCategory.textContent = getCategoryText(data.category);
-    popupCategory.className = `popup-category category-${data.category}`;
+    if (popupTitle) popupTitle.textContent = data.name;
+    if (popupDesc) popupDesc.textContent = data.desc;
+    if (popupCategory) {
+      popupCategory.textContent = getCategoryText(data.category);
+      popupCategory.className = `popup-category category-${data.category}`;
+    }
 
     if (popupLink) {
       if (data.link) {
@@ -689,61 +1765,56 @@ document.addEventListener("DOMContentLoaded", function () {
       }
     }
 
-    popup.style.display = "flex";
+    if (popup) popup.style.display = "flex";
   }
 
-  function getCategoryText(category) {
-    const texts = {
-      mag: "🛍️ Магазин",
-      off: "🏢 Офис",
-      rest: "🍽️ Ресторан",
-    };
-    return texts[category] || category;
+  // ========== ЗАКРЫТИЕ ПОПАПА ==========
+  function closePopup() {
+    const popup = document.getElementById("shop-popup");
+    if (popup) popup.style.display = "none";
   }
 
-  // ========== ФИЛЬТРАЦИЯ ==========
-  let currentFilter = "all";
-
+  // ========== ПРИМЕНЕНИЕ ФИЛЬТРА ==========
   function applyFilter(category) {
     currentFilter = category;
+
     allShops.forEach(shop => {
-      const shopCategory = shop.getAttribute("data-category");
+      const shopCategoryAttr = shop.getAttribute("data-category");
       const shapes = shop.querySelectorAll("path:not(.text-label)");
       const texts = shop.querySelectorAll("text");
+      const isMatching = matchesCategory(shopCategoryAttr, category);
+      const firstCategory = getFirstCategory(shopCategoryAttr);
 
       if (category === "all") {
         shapes.forEach(shape => {
-          // Если это подсвеченный магазин, возвращаем цвет подсветки
           if (shop.id === highlightedShopId) {
-            shape.style.fill = getHighlightFill(shopCategory);
+            shape.style.fill = getHighlightFill(shopCategoryAttr);
           } else {
             shape.style.fill = shape.getAttribute("data-original-fill") || "#fcf2eb";
           }
         });
         texts.forEach(text => {
-          text.style.fill = "";
           text.style.opacity = "1";
+          text.style.fill = "";
         });
         shop.style.opacity = "1";
         shop.style.filter = "none";
-      } else if (shopCategory === category) {
+      } else if (isMatching) {
         shapes.forEach(shape => {
-          shape.style.fill = getFilterFill(category);
+          shape.style.fill = getFilterFill(firstCategory);
         });
         texts.forEach(text => {
-          text.style.fill = "";
           text.style.opacity = "1";
+          text.style.fill = "";
         });
         shop.style.opacity = "1";
         shop.style.filter = "drop-shadow(0 0 3px rgba(0,0,0,0.2))";
       } else {
         shapes.forEach(shape => {
-          // Неактивные магазины становятся серыми, даже если были подсвечены
           shape.style.fill = shape.getAttribute("data-original-fill") || "#fcf2eb";
         });
         texts.forEach(text => {
-          text.style.fill = "";
-          text.style.opacity = "0.6";
+          text.style.opacity = "0.4";
         });
         shop.style.opacity = "0.3";
         shop.style.filter = "grayscale(0.7) brightness(0.6)";
@@ -751,40 +1822,16 @@ document.addEventListener("DOMContentLoaded", function () {
     });
   }
 
-  // ========== КНОПКИ ФИЛЬТРОВ ==========
-  document.querySelectorAll(".filter-btn").forEach(btn => {
-    btn.addEventListener("click", () => {
-      document.querySelectorAll(".filter-btn").forEach(b => b.classList.remove("active"));
-      btn.classList.add("active");
-      applyFilter(btn.getAttribute("data-filter"));
-    });
-  });
-
-  // ========== ЗАКРЫТИЕ ПОПАПА ==========
-  function closePopup() {
-    document.getElementById("shop-popup").style.display = "none";
-  }
-
-  document.querySelector(".close-btn")?.addEventListener("click", closePopup);
-  window.addEventListener("click", event => {
-    if (event.target === document.getElementById("shop-popup")) closePopup();
-  });
-  document.addEventListener("keydown", event => {
-    if (event.key === "Escape") closePopup();
-  });
-
-  // ========== ОБНОВЛЕНИЕ ПРИ ИЗМЕНЕНИИ РАЗМЕРА ОКНА ==========
-  window.addEventListener("resize", () => {
-    if (panZoomInstance) {
-      panZoomInstance.resize();
-      panZoomInstance.fit();
-      panZoomInstance.center();
-    }
-  });
-
   // ========== ДОБАВЛЕНИЕ НАЗВАНИЙ ВНУТРИ SVG ==========
   function addSVGLabels() {
-    const allShops = document.querySelectorAll("#map-container g[id]");
+    // Создаём отдельный слой для всех надписей (если ещё не создан)
+    let labelsLayer = document.getElementById("shop-labels-layer");
+    if (!labelsLayer) {
+      labelsLayer = document.createElementNS("http://www.w3.org/2000/svg", "g");
+      labelsLayer.setAttribute("id", "shop-labels-layer");
+      labelsLayer.setAttribute("style", "pointer-events: none;");
+      svgElement.appendChild(labelsLayer);
+    }
 
     allShops.forEach(shop => {
       const shopId = shop.id;
@@ -801,28 +1848,62 @@ document.addEventListener("DOMContentLoaded", function () {
         maxY = -Infinity;
 
       paths.forEach(path => {
-        const bbox = path.getBBox();
-        minX = Math.min(minX, bbox.x);
-        minY = Math.min(minY, bbox.y);
-        maxX = Math.max(maxX, bbox.x + bbox.width);
-        maxY = Math.max(maxY, bbox.y + bbox.height);
+        try {
+          const bbox = path.getBBox();
+          minX = Math.min(minX, bbox.x);
+          minY = Math.min(minY, bbox.y);
+          maxX = Math.max(maxX, bbox.x + bbox.width);
+          maxY = Math.max(maxY, bbox.y + bbox.height);
+        } catch (e) {}
       });
+
+      if (minX === Infinity) return;
 
       const centerX = (minX + maxX) / 2;
       const centerY = (minY + maxY) / 2;
 
+      // Создаём группу для текста с фоном
+      const textGroup = document.createElementNS("http://www.w3.org/2000/svg", "g");
+      textGroup.setAttribute("class", "shop-label");
+      textGroup.setAttribute("data-shop-id", shopId);
+
+      // Вычисляем ширину текста без создания DOM-элемента
+      const textWidth = shopName.length * (shopNameSize * 0.6);
+      const textHeight = shopNameSize;
+
+      // Добавляем полупрозрачный фон под текст
+      const bgRect = document.createElementNS("http://www.w3.org/2000/svg", "rect");
+      bgRect.setAttribute("x", centerX - textWidth / 2 - 8);
+      bgRect.setAttribute("y", centerY - textHeight / 2 - 4);
+      bgRect.setAttribute("width", textWidth + 16);
+      bgRect.setAttribute("height", textHeight + 8);
+      bgRect.setAttribute("rx", "6");
+      bgRect.setAttribute("ry", "6");
+      bgRect.setAttribute("fill", "white");
+      bgRect.setAttribute("fill-opacity", "0.92");
+      bgRect.setAttribute("stroke", "#164680");
+      bgRect.setAttribute("stroke-width", "1");
+      bgRect.setAttribute("stroke-opacity", "0.3");
+
+      // Создаём сам текст
       const text = document.createElementNS("http://www.w3.org/2000/svg", "text");
       text.setAttribute("x", centerX);
       text.setAttribute("y", centerY);
       text.setAttribute("fill", "#164680");
       text.setAttribute("font-size", shopNameSize);
       text.setAttribute("font-family", "Ubuntu, sans-serif");
+      text.setAttribute("font-weight", "500");
       text.setAttribute("text-anchor", "middle");
       text.setAttribute("dominant-baseline", "middle");
       text.setAttribute("pointer-events", "none");
       text.textContent = shopName;
 
-      shop.appendChild(text);
+      // Добавляем фон и текст в группу
+      textGroup.appendChild(bgRect);
+      textGroup.appendChild(text);
+
+      // Добавляем группу в отдельный слой
+      labelsLayer.appendChild(textGroup);
     });
   }
 
@@ -864,31 +1945,14 @@ document.addEventListener("DOMContentLoaded", function () {
 
     const container = document.getElementById("map-container");
     const containerRect = container.getBoundingClientRect();
-    const svgRect = svgElement.getBoundingClientRect();
-    const viewBox = svgElement.viewBox.baseVal;
 
     panZoomInstance.zoom(zoomLevel);
-    const zoom = panZoomInstance.getZoom();
-
-    const targetX = -(centerX * zoom) + containerRect.width / 2;
-    const targetY = -(centerY * zoom) + containerRect.height / 2;
-
-    panZoomInstance.pan({ x: targetX, y: targetY });
+    panZoomInstance.pan({
+      x: containerRect.width / 2 - centerX * zoomLevel,
+      y: containerRect.height / 2 - centerY * zoomLevel,
+    });
 
     return true;
-  }
-
-  // ========== ПОЛУЧЕНИЕ ID МАГАЗИНА ИЗ СКРЫТОГО БЛОКА ==========
-  function getCurrentShopFromPage() {
-    const shopBlock = document.getElementById("current-shop");
-    if (!shopBlock) return null;
-
-    const shopId = shopBlock.getAttribute("data-shop-id");
-    if (!shopId) return null;
-
-    const zoom = parseFloat(shopBlock.getAttribute("data-zoom")) || 2.0;
-
-    return { shopId, zoom };
   }
 
   // ========== ПОЛУЧЕНИЕ ID МАГАЗИНА ИЗ GET-ПАРАМЕТРА ==========
@@ -896,28 +1960,19 @@ document.addEventListener("DOMContentLoaded", function () {
     const urlParams = new URLSearchParams(window.location.search);
     const shopId = urlParams.get("location");
     if (!shopId || !shopData[shopId]) return null;
-
-    const zoom = shopData[shopId].zoom || 2.0;
-    return { shopId, zoom };
+    return { shopId, zoom: shopData[shopId].zoom || 2.0 };
   }
 
-  // ========== АВТОМАТИЧЕСКОЕ ЦЕНТРИРОВАНИЕ И ПОДСВЕТКА ==========
+  // ========== АВТОМАТИЧЕСКОЕ ЦЕНТРИРОВАНИЕ ==========
   function initAutoCenterAndHighlight() {
-    // Приоритет: скрытый блок #current-shop имеет приоритет над GET-параметром
-    let targetShop = getCurrentShopFromPage();
-
-    if (!targetShop) {
-      targetShop = getCurrentShopFromURL();
-    }
+    let targetShop = getCurrentShopFromURL();
 
     if (targetShop && shopData[targetShop.shopId]) {
       const waitForPanZoom = setInterval(() => {
         if (panZoomInstance && document.getElementById(targetShop.shopId)) {
           clearInterval(waitForPanZoom);
           setTimeout(() => {
-            // Подсвечиваем магазин
             highlightShop(targetShop.shopId);
-            // Центрируем карту
             centerOnShop(targetShop.shopId, targetShop.zoom);
           }, 200);
         }
@@ -925,11 +1980,168 @@ document.addEventListener("DOMContentLoaded", function () {
     }
   }
 
-  // ========== ЗАПУСК ==========
-  initPanZoom();
-  setTimeout(addSVGLabels, 100);
-  setTimeout(initAutoCenterAndHighlight, 500);
-  applyFilter("all");
+  // ========== НАСТРОЙКА ВИДИМОСТИ ТЕКСТА ПРИ ЗУМЕ ==========
+  function adjustTextVisibility() {
+    if (!panZoomInstance) return;
+    const zoom = panZoomInstance.getZoom();
+
+    document.querySelectorAll("#map-container svg g[id] text").forEach(text => {
+      if (zoom >= 0.8) {
+        text.style.opacity = "1";
+        text.style.visibility = "visible";
+      } else if (zoom >= 0.5) {
+        text.style.opacity = "0.7";
+        text.style.visibility = "visible";
+      } else {
+        text.style.opacity = "0";
+        text.style.visibility = "hidden";
+      }
+    });
+  }
+
+  // ========== ОБНОВЛЕНИЕ ПРИ ИЗМЕНЕНИИ РАЗМЕРА ОКНА ==========
+  function handleResize() {
+    if (panZoomInstance) {
+      setTimeout(() => {
+        panZoomInstance.resize();
+        panZoomInstance.fit();
+        panZoomInstance.center();
+        adjustTextVisibility();
+      }, 100);
+    }
+  }
+
+  // ========== ОБРАБОТЧИКИ ДЛЯ МАГАЗИНОВ ==========
+  function attachShopEventHandlers() {
+    allShops.forEach(shop => {
+      shop.style.cursor = "pointer";
+
+      shop.addEventListener("click", event => {
+        event.stopPropagation();
+        showPopup(shop.id);
+      });
+
+      shop.addEventListener("touchstart", e => {
+        e.stopPropagation();
+        touchTimer = setTimeout(() => {
+          isPanning = true;
+        }, 200);
+      });
+
+      shop.addEventListener("touchend", e => {
+        e.stopPropagation();
+        if (touchTimer) {
+          clearTimeout(touchTimer);
+          touchTimer = null;
+        }
+        if (!isPanning) {
+          e.preventDefault();
+          showPopup(shop.id);
+        }
+        isPanning = false;
+      });
+
+      shop.addEventListener("touchmove", e => {
+        if (touchTimer) {
+          clearTimeout(touchTimer);
+          touchTimer = null;
+          isPanning = true;
+        }
+      });
+
+      shop.addEventListener("mouseenter", () => {
+        const shopCategoryAttr = shop.getAttribute("data-category");
+        const isInactive = currentFilter !== "all" && !matchesCategory(shopCategoryAttr, currentFilter);
+        if (isInactive) return;
+
+        const shapes = shop.querySelectorAll("path:not(.text-label)");
+        const firstCategory = getFirstCategory(shopCategoryAttr);
+        const hoverColor = getHoverFill(firstCategory);
+        shapes.forEach(shape => {
+          shape.style.fill = hoverColor;
+        });
+      });
+
+      shop.addEventListener("mouseleave", () => {
+        const shopCategoryAttr = shop.getAttribute("data-category");
+        const shapes = shop.querySelectorAll("path:not(.text-label)");
+        const isInactive = currentFilter !== "all" && !matchesCategory(shopCategoryAttr, currentFilter);
+        const firstCategory = getFirstCategory(shopCategoryAttr);
+
+        if (isInactive) {
+          shapes.forEach(shape => {
+            shape.style.fill = shape.getAttribute("data-original-fill") || "#fcf2eb";
+          });
+          shop.style.filter = "grayscale(0.7) brightness(0.6)";
+        } else if (currentFilter !== "all" && matchesCategory(shopCategoryAttr, currentFilter)) {
+          shapes.forEach(shape => {
+            shape.style.fill = getFilterFill(firstCategory);
+          });
+          shop.style.filter = "drop-shadow(0 0 3px rgba(0,0,0,0.2))";
+        } else {
+          if (shop.id === highlightedShopId) {
+            shapes.forEach(shape => {
+              shape.style.fill = getHighlightFill(shopCategoryAttr);
+            });
+          } else {
+            shapes.forEach(shape => {
+              shape.style.fill = shape.getAttribute("data-original-fill") || "#fcf2eb";
+            });
+          }
+          shop.style.filter = "none";
+        }
+      });
+    });
+  }
+
+  // ========== ИНИЦИАЛИЗАЦИЯ ФИЛЬТРОВ ==========
+  function initFilters() {
+    document.querySelectorAll(".filter-btn").forEach(btn => {
+      btn.addEventListener("click", () => {
+        document.querySelectorAll(".filter-btn").forEach(b => b.classList.remove("active"));
+        btn.classList.add("active");
+        applyFilter(btn.getAttribute("data-filter"));
+      });
+    });
+  }
+
+  // ========== ОСНОВНАЯ ФУНКЦИЯ ИНИЦИАЛИЗАЦИИ ==========
+  function init() {
+    console.log("Инициализация SVG карты...");
+
+    // Убираем жесткие размеры SVG
+    svgElement.removeAttribute("width");
+    svgElement.removeAttribute("height");
+    svgElement.setAttribute("width", "100%");
+
+    if (allShops.length === 0) {
+      console.warn("Магазины не найдены. Проверьте атрибуты id у элементов <g>");
+    }
+
+    saveOriginalColors();
+    initPanZoom();
+    addSVGLabels();
+    attachShopEventHandlers();
+    initFilters();
+    applyFilter("all");
+    initAutoCenterAndHighlight();
+    window.addEventListener("resize", handleResize);
+    setTimeout(adjustTextVisibility, 500);
+
+    // Настройка закрытия попапа
+    const closeBtn = document.querySelector(".close-btn");
+    if (closeBtn) closeBtn.addEventListener("click", closePopup);
+    window.addEventListener("click", event => {
+      if (event.target === document.getElementById("shop-popup")) closePopup();
+    });
+    document.addEventListener("keydown", event => {
+      if (event.key === "Escape") closePopup();
+    });
+
+    console.log("Инициализация завершена");
+  }
+
+  init();
 });
 
 // Функция, которая выполнится после полной загрузки страницы

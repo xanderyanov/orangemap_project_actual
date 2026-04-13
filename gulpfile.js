@@ -92,6 +92,7 @@ var myjsfiles = [
   // "src/assets/js/__sliders.js",
   "src/assets/js/__resize.js",
   "src/assets/js/__paralax.js",
+  "src/assets/js/__constMap.js",
   "src/assets/js/__svgmap.js",
   "src/assets/js/main.js",
 ];

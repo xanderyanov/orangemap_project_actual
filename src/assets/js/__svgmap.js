@@ -1,47 +1,10 @@
+// main.js
 document.addEventListener("DOMContentLoaded", function () {
-  // ========== ДАННЫЕ О МАГАЗИНАХ (с zoom для каждого) ==========
-  const shopData = {
-    pav_afrodita: {
-      name: "Афродита",
-      namesize: 12,
-      desc: "Магазин косметики и парфюмерии.",
-      category: "mag",
-      link: "/ru/shops/afrodita",
-      zoom: 2.0,
-    },
-    mag_secondhand: {
-      name: "Second Hand",
-      namesize: 14,
-      desc: "Магазин одежды из Европы.",
-      category: "mag",
-      link: "/ru/shops/secondhand",
-      zoom: 2.0,
-    },
-    serv_mfc: {
-      name: "ФСО",
-      namesize: 28,
-      desc: "Многофункциональный центр услуг.",
-      category: "off",
-      link: "/ru/offices/mfc",
-      zoom: 1.5,
-    },
-    rest_bmw: {
-      name: "BMW AutoShow",
-      namesize: 16,
-      desc: "Автосалон BMW.",
-      category: "off",
-      link: "/ru/offices/bmw",
-      zoom: 1.8,
-    },
-    baz_bq: {
-      name: "BQ Burger",
-      namesize: 10,
-      desc: "Ресторан быстрого питания.",
-      category: "rest",
-      link: "/ru/restaurants/bq",
-      zoom: 2.5,
-    },
-  };
+  // ========== ПРОВЕРКА, ЧТО shopData ЗАГРУЖЕН ==========
+  if (typeof shopData === "undefined") {
+    console.error("shopData не загружен! Подключите shop-data.js перед этим файлом.");
+    return;
+  }
 
   // ========== НАХОДИМ ЭЛЕМЕНТЫ ==========
   const svgElement = document.querySelector("#map-container svg");
@@ -62,7 +25,7 @@ document.addEventListener("DOMContentLoaded", function () {
             controlIconsEnabled: true,
             fit: true,
             center: true,
-            minZoom: 0.5,
+            minZoom: 0.3,
             maxZoom: 5,
             zoomScaleSensitivity: 0.2,
           });
@@ -84,6 +47,8 @@ document.addEventListener("DOMContentLoaded", function () {
   // ========== ПЕРЕМЕННЫЕ ДЛЯ ОБРАБОТКИ СОБЫТИЙ ==========
   let touchTimer = null;
   let isPanning = false;
+  let currentFilter = "all";
+  let highlightedShopId = null;
 
   // ========== ЦВЕТА ДЛЯ КАТЕГОРИЙ ==========
   const categoryStyle = {
@@ -93,7 +58,7 @@ document.addEventListener("DOMContentLoaded", function () {
       originalFill: "#fce4ec",
       hoverFill: "#fff3e0",
       filterFill: "#fff8e1",
-      highlightFill: "#ffe0b2", // цвет для подсветки выбранного магазина
+      highlightFill: "#ffe0b2",
     },
     serv: {
       name: "Услуги и сервис",
@@ -101,7 +66,7 @@ document.addEventListener("DOMContentLoaded", function () {
       originalFill: "#e3f2fd",
       hoverFill: "#e8f4fd",
       filterFill: "#e8f4fd",
-      highlightFill: "#bbdefb", // цвет для подсветки выбранного магазина
+      highlightFill: "#bbdefb",
     },
     rest: {
       name: "Ресторан",
@@ -109,50 +74,49 @@ document.addEventListener("DOMContentLoaded", function () {
       originalFill: "#e8f5e9",
       hoverFill: "#f1f8e9",
       filterFill: "#f1f8e9",
-      highlightFill: "#c8e6c9", // цвет для подсветки выбранного магазина
+      highlightFill: "#c8e6c9",
     },
     baz: {
       name: "Оранжевый базар",
-      icon: "🍽️",
-      originalFill: "#e8f5e9",
-      hoverFill: "#f1f8e9",
-      filterFill: "#f1f8e9",
-      highlightFill: "#c8e6c9", // цвет для подсветки выбранного магазина
+      icon: "🛒",
+      originalFill: "#fff8e1",
+      hoverFill: "#fff9c4",
+      filterFill: "#fff9c4",
+      highlightFill: "#fff59d",
     },
     pav: {
       name: "Павильон",
-      icon: "🍽️",
-      originalFill: "#e8f5e9",
-      hoverFill: "#f1f8e9",
-      filterFill: "#f1f8e9",
-      highlightFill: "#c8e6c9", // цвет для подсветки выбранного магазина
+      icon: "🏪",
+      originalFill: "#f3e5f5",
+      hoverFill: "#f3e5f5",
+      filterFill: "#f3e5f5",
+      highlightFill: "#e1bee7",
+    },
+    off: {
+      name: "Офис",
+      icon: "🏢",
+      originalFill: "#e0f7fa",
+      hoverFill: "#e0f7fa",
+      filterFill: "#e0f7fa",
+      highlightFill: "#b2ebf2",
     },
   };
 
-  function getHighlightFill(category) {
-    return categoryStyle[category]?.highlightFill || "#ffe0b2";
+  // ========== ВСПОМОГАТЕЛЬНЫЕ ФУНКЦИИ ==========
+
+  // Проверяет, соответствует ли shop выбранной категории
+  function matchesCategory(shopCategoryAttr, selectedCategory) {
+    if (selectedCategory === "all") return true;
+    if (!shopCategoryAttr) return false;
+
+    const categories = shopCategoryAttr.split(",").map(cat => cat.trim());
+    return categories.includes(selectedCategory);
   }
 
-  // ========== СОХРАНЕНИЕ ОРИГИНАЛЬНЫХ ЦВЕТОВ ==========
-  function saveOriginalColors() {
-    allShops.forEach(shop => {
-      const shopCategory = shop.getAttribute("data-category");
-      const shapes = shop.querySelectorAll("path:not(.text-label)");
-
-      shapes.forEach(path => {
-        const existingFill = path.getAttribute("fill");
-        let originalFill;
-
-        if (existingFill && existingFill !== "#fcf2eb") {
-          originalFill = existingFill;
-        } else {
-          originalFill = categoryStyle[shopCategory]?.originalFill || "#fcf2eb";
-        }
-
-        path.setAttribute("data-original-fill", originalFill);
-        path.style.fill = originalFill;
-      });
-    });
+  // Получает первую категорию из атрибута
+  function getFirstCategory(shopCategoryAttr) {
+    if (!shopCategoryAttr) return null;
+    return shopCategoryAttr.split(",")[0].trim();
   }
 
   function getHoverFill(category) {
@@ -163,13 +127,49 @@ document.addEventListener("DOMContentLoaded", function () {
     return categoryStyle[category]?.filterFill || "#f5f5f5";
   }
 
-  saveOriginalColors();
+  function getHighlightFill(shopCategoryAttr) {
+    if (!shopCategoryAttr) return "#ffe0b2";
+    const firstCategory = getFirstCategory(shopCategoryAttr);
+    return categoryStyle[firstCategory]?.highlightFill || "#ffe0b2";
+  }
+
+  function getCategoryText(category) {
+    const texts = {
+      mag: "🛍️ Магазин",
+      serv: "🏢 Услуги",
+      rest: "🍽️ Ресторан",
+      baz: "🛒 Оранжевый базар",
+      pav: "🏪 Павильон",
+      off: "🏢 Офис",
+    };
+    return texts[category] || category;
+  }
+
+  // ========== СОХРАНЕНИЕ ОРИГИНАЛЬНЫХ ЦВЕТОВ ==========
+  function saveOriginalColors() {
+    allShops.forEach(shop => {
+      const shopCategoryAttr = shop.getAttribute("data-category");
+      const shapes = shop.querySelectorAll("path:not(.text-label)");
+
+      shapes.forEach(path => {
+        const existingFill = path.getAttribute("fill");
+        let originalFill;
+
+        if (existingFill && existingFill !== "#fcf2eb") {
+          originalFill = existingFill;
+        } else {
+          const firstCategory = getFirstCategory(shopCategoryAttr);
+          originalFill = categoryStyle[firstCategory]?.originalFill || "#fcf2eb";
+        }
+
+        path.setAttribute("data-original-fill", originalFill);
+        path.style.fill = originalFill;
+      });
+    });
+  }
 
   // ========== ПОДСВЕТКА КОНКРЕТНОГО МАГАЗИНА ==========
-  let highlightedShopId = null;
-
   function highlightShop(shopId) {
-    // Сначала сбрасываем подсветку у всех магазинов
     allShops.forEach(shop => {
       const shapes = shop.querySelectorAll("path:not(.text-label)");
       const originalFill = shop.getAttribute("data-original-fill");
@@ -178,13 +178,16 @@ document.addEventListener("DOMContentLoaded", function () {
       });
     });
 
-    if (!shopId) return;
+    if (!shopId) {
+      highlightedShopId = null;
+      return;
+    }
 
     const shop = document.getElementById(shopId);
     if (!shop) return;
 
-    const shopCategory = shop.getAttribute("data-category");
-    const highlightColor = getHighlightFill(shopCategory);
+    const shopCategoryAttr = shop.getAttribute("data-category");
+    const highlightColor = getHighlightFill(shopCategoryAttr);
     const shapes = shop.querySelectorAll("path:not(.text-label)");
 
     shapes.forEach(shape => {
@@ -193,91 +196,6 @@ document.addEventListener("DOMContentLoaded", function () {
 
     highlightedShopId = shopId;
   }
-
-  // ========== ОБРАБОТЧИКИ ДЛЯ МАГАЗИНОВ ==========
-  allShops.forEach(shop => {
-    shop.style.cursor = "pointer";
-
-    shop.addEventListener("click", event => {
-      event.stopPropagation();
-      const shopId = shop.id;
-      const data = shopData[shopId];
-      if (data) showPopup(shopId);
-    });
-
-    shop.addEventListener("touchstart", e => {
-      e.stopPropagation();
-      touchTimer = setTimeout(() => {
-        isPanning = true;
-      }, 200);
-    });
-
-    shop.addEventListener("touchend", e => {
-      e.stopPropagation();
-      if (touchTimer) {
-        clearTimeout(touchTimer);
-        touchTimer = null;
-      }
-      if (!isPanning) {
-        e.preventDefault();
-        const shopId = shop.id;
-        const data = shopData[shopId];
-        if (data) showPopup(shopId);
-      }
-      isPanning = false;
-    });
-
-    shop.addEventListener("touchmove", e => {
-      if (touchTimer) {
-        clearTimeout(touchTimer);
-        touchTimer = null;
-        isPanning = true;
-      }
-    });
-
-    shop.addEventListener("mouseenter", () => {
-      const shopCategory = shop.getAttribute("data-category");
-      const isInactive = currentFilter !== "all" && shopCategory !== currentFilter;
-      if (isInactive) return;
-
-      const shapes = shop.querySelectorAll("path:not(.text-label)");
-      const hoverColor = getHoverFill(shopCategory);
-      shapes.forEach(shape => {
-        shape.style.fill = hoverColor;
-      });
-      shop.style.transition = "all 0.2s ease";
-    });
-
-    shop.addEventListener("mouseleave", () => {
-      const shopCategory = shop.getAttribute("data-category");
-      const shapes = shop.querySelectorAll("path:not(.text-label)");
-      const isInactive = currentFilter !== "all" && shopCategory !== currentFilter;
-
-      if (isInactive) {
-        shapes.forEach(shape => {
-          shape.style.fill = shape.getAttribute("data-original-fill") || "#fcf2eb";
-        });
-        shop.style.filter = "grayscale(0.7) brightness(0.6)";
-      } else if (currentFilter !== "all" && shopCategory === currentFilter) {
-        shapes.forEach(shape => {
-          shape.style.fill = getFilterFill(shopCategory);
-        });
-        shop.style.filter = "drop-shadow(0 0 3px rgba(0,0,0,0.2))";
-      } else {
-        // Если это подсвеченный магазин, возвращаем цвет подсветки, а не оригинальный
-        if (shop.id === highlightedShopId) {
-          shapes.forEach(shape => {
-            shape.style.fill = getHighlightFill(shopCategory);
-          });
-        } else {
-          shapes.forEach(shape => {
-            shape.style.fill = shape.getAttribute("data-original-fill") || "#fcf2eb";
-          });
-        }
-        shop.style.filter = "none";
-      }
-    });
-  });
 
   // ========== ФУНКЦИЯ ПОКАЗА ПОПАПА ==========
   function showPopup(shopId) {
@@ -290,10 +208,12 @@ document.addEventListener("DOMContentLoaded", function () {
     const popupCategory = document.getElementById("popup-category-tag");
     const popupLink = document.getElementById("popup-link");
 
-    popupTitle.textContent = data.name;
-    popupDesc.textContent = data.desc;
-    popupCategory.textContent = getCategoryText(data.category);
-    popupCategory.className = `popup-category category-${data.category}`;
+    if (popupTitle) popupTitle.textContent = data.name;
+    if (popupDesc) popupDesc.textContent = data.desc;
+    if (popupCategory) {
+      popupCategory.textContent = getCategoryText(data.category);
+      popupCategory.className = `popup-category category-${data.category}`;
+    }
 
     if (popupLink) {
       if (data.link) {
@@ -304,61 +224,56 @@ document.addEventListener("DOMContentLoaded", function () {
       }
     }
 
-    popup.style.display = "flex";
+    if (popup) popup.style.display = "flex";
   }
 
-  function getCategoryText(category) {
-    const texts = {
-      mag: "🛍️ Магазин",
-      off: "🏢 Офис",
-      rest: "🍽️ Ресторан",
-    };
-    return texts[category] || category;
+  // ========== ЗАКРЫТИЕ ПОПАПА ==========
+  function closePopup() {
+    const popup = document.getElementById("shop-popup");
+    if (popup) popup.style.display = "none";
   }
 
-  // ========== ФИЛЬТРАЦИЯ ==========
-  let currentFilter = "all";
-
+  // ========== ПРИМЕНЕНИЕ ФИЛЬТРА ==========
   function applyFilter(category) {
     currentFilter = category;
+
     allShops.forEach(shop => {
-      const shopCategory = shop.getAttribute("data-category");
+      const shopCategoryAttr = shop.getAttribute("data-category");
       const shapes = shop.querySelectorAll("path:not(.text-label)");
       const texts = shop.querySelectorAll("text");
+      const isMatching = matchesCategory(shopCategoryAttr, category);
+      const firstCategory = getFirstCategory(shopCategoryAttr);
 
       if (category === "all") {
         shapes.forEach(shape => {
-          // Если это подсвеченный магазин, возвращаем цвет подсветки
           if (shop.id === highlightedShopId) {
-            shape.style.fill = getHighlightFill(shopCategory);
+            shape.style.fill = getHighlightFill(shopCategoryAttr);
           } else {
             shape.style.fill = shape.getAttribute("data-original-fill") || "#fcf2eb";
           }
         });
         texts.forEach(text => {
-          text.style.fill = "";
           text.style.opacity = "1";
+          text.style.fill = "";
         });
         shop.style.opacity = "1";
         shop.style.filter = "none";
-      } else if (shopCategory === category) {
+      } else if (isMatching) {
         shapes.forEach(shape => {
-          shape.style.fill = getFilterFill(category);
+          shape.style.fill = getFilterFill(firstCategory);
         });
         texts.forEach(text => {
-          text.style.fill = "";
           text.style.opacity = "1";
+          text.style.fill = "";
         });
         shop.style.opacity = "1";
         shop.style.filter = "drop-shadow(0 0 3px rgba(0,0,0,0.2))";
       } else {
         shapes.forEach(shape => {
-          // Неактивные магазины становятся серыми, даже если были подсвечены
           shape.style.fill = shape.getAttribute("data-original-fill") || "#fcf2eb";
         });
         texts.forEach(text => {
-          text.style.fill = "";
-          text.style.opacity = "0.6";
+          text.style.opacity = "0.4";
         });
         shop.style.opacity = "0.3";
         shop.style.filter = "grayscale(0.7) brightness(0.6)";
@@ -366,40 +281,16 @@ document.addEventListener("DOMContentLoaded", function () {
     });
   }
 
-  // ========== КНОПКИ ФИЛЬТРОВ ==========
-  document.querySelectorAll(".filter-btn").forEach(btn => {
-    btn.addEventListener("click", () => {
-      document.querySelectorAll(".filter-btn").forEach(b => b.classList.remove("active"));
-      btn.classList.add("active");
-      applyFilter(btn.getAttribute("data-filter"));
-    });
-  });
-
-  // ========== ЗАКРЫТИЕ ПОПАПА ==========
-  function closePopup() {
-    document.getElementById("shop-popup").style.display = "none";
-  }
-
-  document.querySelector(".close-btn")?.addEventListener("click", closePopup);
-  window.addEventListener("click", event => {
-    if (event.target === document.getElementById("shop-popup")) closePopup();
-  });
-  document.addEventListener("keydown", event => {
-    if (event.key === "Escape") closePopup();
-  });
-
-  // ========== ОБНОВЛЕНИЕ ПРИ ИЗМЕНЕНИИ РАЗМЕРА ОКНА ==========
-  window.addEventListener("resize", () => {
-    if (panZoomInstance) {
-      panZoomInstance.resize();
-      panZoomInstance.fit();
-      panZoomInstance.center();
-    }
-  });
-
   // ========== ДОБАВЛЕНИЕ НАЗВАНИЙ ВНУТРИ SVG ==========
   function addSVGLabels() {
-    const allShops = document.querySelectorAll("#map-container g[id]");
+    // Создаём отдельный слой для всех надписей (если ещё не создан)
+    let labelsLayer = document.getElementById("shop-labels-layer");
+    if (!labelsLayer) {
+      labelsLayer = document.createElementNS("http://www.w3.org/2000/svg", "g");
+      labelsLayer.setAttribute("id", "shop-labels-layer");
+      labelsLayer.setAttribute("style", "pointer-events: none;");
+      svgElement.appendChild(labelsLayer);
+    }
 
     allShops.forEach(shop => {
       const shopId = shop.id;
@@ -416,28 +307,62 @@ document.addEventListener("DOMContentLoaded", function () {
         maxY = -Infinity;
 
       paths.forEach(path => {
-        const bbox = path.getBBox();
-        minX = Math.min(minX, bbox.x);
-        minY = Math.min(minY, bbox.y);
-        maxX = Math.max(maxX, bbox.x + bbox.width);
-        maxY = Math.max(maxY, bbox.y + bbox.height);
+        try {
+          const bbox = path.getBBox();
+          minX = Math.min(minX, bbox.x);
+          minY = Math.min(minY, bbox.y);
+          maxX = Math.max(maxX, bbox.x + bbox.width);
+          maxY = Math.max(maxY, bbox.y + bbox.height);
+        } catch (e) {}
       });
+
+      if (minX === Infinity) return;
 
       const centerX = (minX + maxX) / 2;
       const centerY = (minY + maxY) / 2;
 
+      // Создаём группу для текста с фоном
+      const textGroup = document.createElementNS("http://www.w3.org/2000/svg", "g");
+      textGroup.setAttribute("class", "shop-label");
+      textGroup.setAttribute("data-shop-id", shopId);
+
+      // Вычисляем ширину текста без создания DOM-элемента
+      const textWidth = shopName.length * (shopNameSize * 0.6);
+      const textHeight = shopNameSize;
+
+      // Добавляем полупрозрачный фон под текст
+      const bgRect = document.createElementNS("http://www.w3.org/2000/svg", "rect");
+      bgRect.setAttribute("x", centerX - textWidth / 2 - 8);
+      bgRect.setAttribute("y", centerY - textHeight / 2 - 4);
+      bgRect.setAttribute("width", textWidth + 16);
+      bgRect.setAttribute("height", textHeight + 8);
+      bgRect.setAttribute("rx", "6");
+      bgRect.setAttribute("ry", "6");
+      bgRect.setAttribute("fill", "white");
+      bgRect.setAttribute("fill-opacity", "0.92");
+      bgRect.setAttribute("stroke", "#164680");
+      bgRect.setAttribute("stroke-width", "1");
+      bgRect.setAttribute("stroke-opacity", "0.3");
+
+      // Создаём сам текст
       const text = document.createElementNS("http://www.w3.org/2000/svg", "text");
       text.setAttribute("x", centerX);
       text.setAttribute("y", centerY);
       text.setAttribute("fill", "#164680");
       text.setAttribute("font-size", shopNameSize);
       text.setAttribute("font-family", "Ubuntu, sans-serif");
+      text.setAttribute("font-weight", "500");
       text.setAttribute("text-anchor", "middle");
       text.setAttribute("dominant-baseline", "middle");
       text.setAttribute("pointer-events", "none");
       text.textContent = shopName;
 
-      shop.appendChild(text);
+      // Добавляем фон и текст в группу
+      textGroup.appendChild(bgRect);
+      textGroup.appendChild(text);
+
+      // Добавляем группу в отдельный слой
+      labelsLayer.appendChild(textGroup);
     });
   }
 
@@ -479,31 +404,14 @@ document.addEventListener("DOMContentLoaded", function () {
 
     const container = document.getElementById("map-container");
     const containerRect = container.getBoundingClientRect();
-    const svgRect = svgElement.getBoundingClientRect();
-    const viewBox = svgElement.viewBox.baseVal;
 
     panZoomInstance.zoom(zoomLevel);
-    const zoom = panZoomInstance.getZoom();
-
-    const targetX = -(centerX * zoom) + containerRect.width / 2;
-    const targetY = -(centerY * zoom) + containerRect.height / 2;
-
-    panZoomInstance.pan({ x: targetX, y: targetY });
+    panZoomInstance.pan({
+      x: containerRect.width / 2 - centerX * zoomLevel,
+      y: containerRect.height / 2 - centerY * zoomLevel,
+    });
 
     return true;
-  }
-
-  // ========== ПОЛУЧЕНИЕ ID МАГАЗИНА ИЗ СКРЫТОГО БЛОКА ==========
-  function getCurrentShopFromPage() {
-    const shopBlock = document.getElementById("current-shop");
-    if (!shopBlock) return null;
-
-    const shopId = shopBlock.getAttribute("data-shop-id");
-    if (!shopId) return null;
-
-    const zoom = parseFloat(shopBlock.getAttribute("data-zoom")) || 2.0;
-
-    return { shopId, zoom };
   }
 
   // ========== ПОЛУЧЕНИЕ ID МАГАЗИНА ИЗ GET-ПАРАМЕТРА ==========
@@ -511,28 +419,19 @@ document.addEventListener("DOMContentLoaded", function () {
     const urlParams = new URLSearchParams(window.location.search);
     const shopId = urlParams.get("location");
     if (!shopId || !shopData[shopId]) return null;
-
-    const zoom = shopData[shopId].zoom || 2.0;
-    return { shopId, zoom };
+    return { shopId, zoom: shopData[shopId].zoom || 2.0 };
   }
 
-  // ========== АВТОМАТИЧЕСКОЕ ЦЕНТРИРОВАНИЕ И ПОДСВЕТКА ==========
+  // ========== АВТОМАТИЧЕСКОЕ ЦЕНТРИРОВАНИЕ ==========
   function initAutoCenterAndHighlight() {
-    // Приоритет: скрытый блок #current-shop имеет приоритет над GET-параметром
-    let targetShop = getCurrentShopFromPage();
-
-    if (!targetShop) {
-      targetShop = getCurrentShopFromURL();
-    }
+    let targetShop = getCurrentShopFromURL();
 
     if (targetShop && shopData[targetShop.shopId]) {
       const waitForPanZoom = setInterval(() => {
         if (panZoomInstance && document.getElementById(targetShop.shopId)) {
           clearInterval(waitForPanZoom);
           setTimeout(() => {
-            // Подсвечиваем магазин
             highlightShop(targetShop.shopId);
-            // Центрируем карту
             centerOnShop(targetShop.shopId, targetShop.zoom);
           }, 200);
         }
@@ -540,9 +439,166 @@ document.addEventListener("DOMContentLoaded", function () {
     }
   }
 
-  // ========== ЗАПУСК ==========
-  initPanZoom();
-  setTimeout(addSVGLabels, 100);
-  setTimeout(initAutoCenterAndHighlight, 500);
-  applyFilter("all");
+  // ========== НАСТРОЙКА ВИДИМОСТИ ТЕКСТА ПРИ ЗУМЕ ==========
+  function adjustTextVisibility() {
+    if (!panZoomInstance) return;
+    const zoom = panZoomInstance.getZoom();
+
+    document.querySelectorAll("#map-container svg g[id] text").forEach(text => {
+      if (zoom >= 0.8) {
+        text.style.opacity = "1";
+        text.style.visibility = "visible";
+      } else if (zoom >= 0.5) {
+        text.style.opacity = "0.7";
+        text.style.visibility = "visible";
+      } else {
+        text.style.opacity = "0";
+        text.style.visibility = "hidden";
+      }
+    });
+  }
+
+  // ========== ОБНОВЛЕНИЕ ПРИ ИЗМЕНЕНИИ РАЗМЕРА ОКНА ==========
+  function handleResize() {
+    if (panZoomInstance) {
+      setTimeout(() => {
+        panZoomInstance.resize();
+        panZoomInstance.fit();
+        panZoomInstance.center();
+        adjustTextVisibility();
+      }, 100);
+    }
+  }
+
+  // ========== ОБРАБОТЧИКИ ДЛЯ МАГАЗИНОВ ==========
+  function attachShopEventHandlers() {
+    allShops.forEach(shop => {
+      shop.style.cursor = "pointer";
+
+      shop.addEventListener("click", event => {
+        event.stopPropagation();
+        showPopup(shop.id);
+      });
+
+      shop.addEventListener("touchstart", e => {
+        e.stopPropagation();
+        touchTimer = setTimeout(() => {
+          isPanning = true;
+        }, 200);
+      });
+
+      shop.addEventListener("touchend", e => {
+        e.stopPropagation();
+        if (touchTimer) {
+          clearTimeout(touchTimer);
+          touchTimer = null;
+        }
+        if (!isPanning) {
+          e.preventDefault();
+          showPopup(shop.id);
+        }
+        isPanning = false;
+      });
+
+      shop.addEventListener("touchmove", e => {
+        if (touchTimer) {
+          clearTimeout(touchTimer);
+          touchTimer = null;
+          isPanning = true;
+        }
+      });
+
+      shop.addEventListener("mouseenter", () => {
+        const shopCategoryAttr = shop.getAttribute("data-category");
+        const isInactive = currentFilter !== "all" && !matchesCategory(shopCategoryAttr, currentFilter);
+        if (isInactive) return;
+
+        const shapes = shop.querySelectorAll("path:not(.text-label)");
+        const firstCategory = getFirstCategory(shopCategoryAttr);
+        const hoverColor = getHoverFill(firstCategory);
+        shapes.forEach(shape => {
+          shape.style.fill = hoverColor;
+        });
+      });
+
+      shop.addEventListener("mouseleave", () => {
+        const shopCategoryAttr = shop.getAttribute("data-category");
+        const shapes = shop.querySelectorAll("path:not(.text-label)");
+        const isInactive = currentFilter !== "all" && !matchesCategory(shopCategoryAttr, currentFilter);
+        const firstCategory = getFirstCategory(shopCategoryAttr);
+
+        if (isInactive) {
+          shapes.forEach(shape => {
+            shape.style.fill = shape.getAttribute("data-original-fill") || "#fcf2eb";
+          });
+          shop.style.filter = "grayscale(0.7) brightness(0.6)";
+        } else if (currentFilter !== "all" && matchesCategory(shopCategoryAttr, currentFilter)) {
+          shapes.forEach(shape => {
+            shape.style.fill = getFilterFill(firstCategory);
+          });
+          shop.style.filter = "drop-shadow(0 0 3px rgba(0,0,0,0.2))";
+        } else {
+          if (shop.id === highlightedShopId) {
+            shapes.forEach(shape => {
+              shape.style.fill = getHighlightFill(shopCategoryAttr);
+            });
+          } else {
+            shapes.forEach(shape => {
+              shape.style.fill = shape.getAttribute("data-original-fill") || "#fcf2eb";
+            });
+          }
+          shop.style.filter = "none";
+        }
+      });
+    });
+  }
+
+  // ========== ИНИЦИАЛИЗАЦИЯ ФИЛЬТРОВ ==========
+  function initFilters() {
+    document.querySelectorAll(".filter-btn").forEach(btn => {
+      btn.addEventListener("click", () => {
+        document.querySelectorAll(".filter-btn").forEach(b => b.classList.remove("active"));
+        btn.classList.add("active");
+        applyFilter(btn.getAttribute("data-filter"));
+      });
+    });
+  }
+
+  // ========== ОСНОВНАЯ ФУНКЦИЯ ИНИЦИАЛИЗАЦИИ ==========
+  function init() {
+    console.log("Инициализация SVG карты...");
+
+    // Убираем жесткие размеры SVG
+    svgElement.removeAttribute("width");
+    svgElement.removeAttribute("height");
+    svgElement.setAttribute("width", "100%");
+
+    if (allShops.length === 0) {
+      console.warn("Магазины не найдены. Проверьте атрибуты id у элементов <g>");
+    }
+
+    saveOriginalColors();
+    initPanZoom();
+    addSVGLabels();
+    attachShopEventHandlers();
+    initFilters();
+    applyFilter("all");
+    initAutoCenterAndHighlight();
+    window.addEventListener("resize", handleResize);
+    setTimeout(adjustTextVisibility, 500);
+
+    // Настройка закрытия попапа
+    const closeBtn = document.querySelector(".close-btn");
+    if (closeBtn) closeBtn.addEventListener("click", closePopup);
+    window.addEventListener("click", event => {
+      if (event.target === document.getElementById("shop-popup")) closePopup();
+    });
+    document.addEventListener("keydown", event => {
+      if (event.key === "Escape") closePopup();
+    });
+
+    console.log("Инициализация завершена");
+  }
+
+  init();
 });

@@ -3979,6 +3979,21 @@ table.clear td {
   }
 }
 /* Изменение текста на кнопках */
+#map-container svg {
+  width: 100% !important;
+  height: auto !important;
+  min-height: 500px;
+}
+#map-container .svg-pan-zoom_viewport {
+  height: auto !important;
+  min-height: 500px;
+}
+#map-container svg .shop-label {
+  pointer-events: none;
+}
+#map-container svg .shop-label rect {
+  pointer-events: none;
+}
 :root {
   /* Светлая тема */
   --bg-primary: #f8f9fa;

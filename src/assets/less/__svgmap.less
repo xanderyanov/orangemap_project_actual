@@ -298,3 +298,22 @@
 // [id^="viewport-"]::after {
 //   display: none !important;
 // }
+
+#map-container svg {
+  width: 100% !important;
+  height: auto !important;
+  min-height: 500px;
+}
+
+#map-container .svg-pan-zoom_viewport {
+  height: auto !important;
+  min-height: 500px;
+}
+
+#map-container svg .shop-label {
+  pointer-events: none;
+}
+
+#map-container svg .shop-label rect {
+  pointer-events: none;
+}
