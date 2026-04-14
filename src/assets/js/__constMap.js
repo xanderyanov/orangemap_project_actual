@@ -1,4 +1,69 @@
+// ========== ЦВЕТА ДЛЯ КАТЕГОРИЙ ==========
+const categoryStyle = {
+  mag: {
+    name: "Магазин",
+    icon: "🛍️",
+    originalFill: "rgba(103, 248, 103, .7)",
+    hoverFill: "rgba(103, 248, 103, .9)",
+    filterFill: "rgba(103, 248, 103, .9)",
+    highlightFill: "rgba(103, 248, 103, 1)",
+  },
+  serv: {
+    name: "Услуги и сервис",
+    icon: "🏢",
+    originalFill: "rgba(255, 167, 2, 0.7)",
+    hoverFill: "rgba(255, 167, 2, 0.9)",
+    filterFill: "rgba(255, 167, 2, 0.9)",
+    highlightFill: "rgba(255, 167, 2, 1)",
+  },
+  rest: {
+    name: "Ресторан",
+    icon: "🍽️",
+    originalFill: "rgba(2, 225, 255, 0.7)",
+    hoverFill: "rgba(2, 225, 255, 0.9)",
+    filterFill: "rgba(2, 225, 255, 0.9)",
+    highlightFill: "rgba(2, 225, 255, 1)",
+  },
+  baz: {
+    name: "Оранжевый базар",
+    icon: "🛒",
+    originalFill: "rgba(225, 2, 255, 0.7)",
+    hoverFill: "rgba(225, 2, 255, 0.9)",
+    filterFill: "rgba(225, 2, 255, 0.9)",
+    highlightFill: "rgba(225, 2, 255, 1)",
+  },
+  pav: {
+    name: "Павильон",
+    icon: "🏪",
+    originalFill: "rgba(2, 255, 213, 0.7)",
+    hoverFill: "rgba(2, 255, 213, 0.9)",
+    filterFill: "rgba(2, 255, 213, 0.9)",
+    highlightFill: "rgba(2, 255, 213, 1)",
+  },
+};
+
 const shopData = {
+  mag_example: {
+    // Основные настройки
+    name: "Название магазина",
+    namesize: 14, // Размер шрифта
+    desc: "Описание магазина.",
+    category: "mag", // Категория
+    link: "/ru/shops/example", // Ссылка
+    zoom: 1.5, // Зум при центрировании
+
+    // Цвета заливки
+    originalFill: "#ff0000", // Оригинальный цвет
+    hoverFill: "#00ff00", // Цвет при наведении
+    filterFill: "#0000ff", // Цвет при фильтрации
+    highlightFill: "#ffff00", // Цвет при подсветке
+
+    // Цвета текста (НОВЫЕ ОПЦИИ!)
+    textColor: "#ffffff", // Цвет текста названия
+    textBgColor: "rgba(0,0,0,0.7)", // Цвет фона текста (опционально)
+    textBgOpacity: 0.9, // Прозрачность фона (по умолчанию 0.92)
+    textOffsetY: 10, // Смещение текста по Y (пиксели)
+  },
   // ========== ПАВИЛЬОНЫ ==========
   pav_korvetavto: {
     name: "Корвет Авто",
@@ -163,6 +228,14 @@ const shopData = {
     category: "mag",
     link: "/ru/shops/ashan",
     zoom: 1.2,
+    // Индивидуальные цвета (все опциональны)
+    originalFill: "rgba(50, 153, 64, 0.7)",
+    hoverFill: "rgba(50, 153, 64, 0.9)",
+    filterFill: "rgba(50, 153, 64, 1)",
+    // Цвет текста названия (опционально)
+    textColor: "#ffffff", // белый текст на зеленом фоне
+    // Цвет фона текста (опционально)
+    // textBgColor: "rgba(0, 0, 0, 0.7)",
   },
   mag_moscowloh: {
     name: "Московские баранки",
@@ -387,6 +460,11 @@ const shopData = {
     category: "mag",
     link: "/ru/shops/lenta",
     zoom: 1.2,
+    // Индивидуальные цвета (все опциональны)
+    originalFill: "#0ec514", // свой оригинальный цвет
+    hoverFill: "#0ec514", // свой цвет при наведении
+    filterFill: "#0ec514", // свой цвет при фильтрации
+    textColor: "#ffffff",
   },
   mag_acoola: {
     name: "Акула",

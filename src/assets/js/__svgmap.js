@@ -1,8 +1,12 @@
 // main.js
 document.addEventListener("DOMContentLoaded", function () {
-  // ========== ПРОВЕРКА, ЧТО shopData ЗАГРУЖЕН ==========
+  // ========== ПРОВЕРКА, ЧТО shopData И categoryStyle ЗАГРУЖЕНЫ ==========
   if (typeof shopData === "undefined") {
     console.error("shopData не загружен! Подключите shop-data.js перед этим файлом.");
+    return;
+  }
+  if (typeof categoryStyle === "undefined") {
+    console.error("categoryStyle не загружен! Подключите category-styles.js перед этим файлом.");
     return;
   }
 
@@ -50,51 +54,13 @@ document.addEventListener("DOMContentLoaded", function () {
   let currentFilter = "all";
   let highlightedShopId = null;
 
-  // ========== ЦВЕТА ДЛЯ КАТЕГОРИЙ ==========
-  const categoryStyle = {
-    mag: {
-      name: "Магазин",
-      icon: "🛍️",
-      originalFill: "#fce4ec",
-      hoverFill: "#fff3e0",
-      filterFill: "#fff8e1",
-      highlightFill: "#ffe0b2",
-    },
-    serv: {
-      name: "Услуги и сервис",
-      icon: "🏢",
-      originalFill: "#e3f2fd",
-      hoverFill: "#e8f4fd",
-      filterFill: "#e8f4fd",
-      highlightFill: "#bbdefb",
-    },
-    rest: {
-      name: "Ресторан",
-      icon: "🍽️",
-      originalFill: "#e8f5e9",
-      hoverFill: "#f1f8e9",
-      filterFill: "#f1f8e9",
-      highlightFill: "#c8e6c9",
-    },
-    baz: {
-      name: "Оранжевый базар",
-      icon: "🛒",
-      originalFill: "#fff8e1",
-      hoverFill: "#fff9c4",
-      filterFill: "#fff9c4",
-      highlightFill: "#fff59d",
-    },
-    pav: {
-      name: "Павильон",
-      icon: "🏪",
-      originalFill: "#f3e5f5",
-      hoverFill: "#f3e5f5",
-      filterFill: "#f3e5f5",
-      highlightFill: "#e1bee7",
-    },
-  };
-
   // ========== ВСПОМОГАТЕЛЬНЫЕ ФУНКЦИИ ==========
+
+  // Проверяет, является ли элемент статичным
+  function isStaticElement(shop) {
+    const categoryAttr = shop.getAttribute("data-category");
+    return !categoryAttr || categoryAttr === "static";
+  }
 
   // Проверяет, соответствует ли shop выбранной категории
   function matchesCategory(shopCategoryAttr, selectedCategory) {
@@ -111,18 +77,40 @@ document.addEventListener("DOMContentLoaded", function () {
     return shopCategoryAttr.split(",")[0].trim();
   }
 
-  function getHoverFill(category) {
+  // Получает оригинальный цвет для магазина
+  function getOriginalFillForShop(shopId, category) {
+    const shopInfo = shopData[shopId];
+    if (shopInfo && shopInfo.originalFill) {
+      return shopInfo.originalFill;
+    }
+    return categoryStyle[category]?.originalFill || "#fcf2eb";
+  }
+
+  // Получает цвет при наведении для магазина
+  function getHoverFillForShop(shopId, category) {
+    const shopInfo = shopData[shopId];
+    if (shopInfo && shopInfo.hoverFill) {
+      return shopInfo.hoverFill;
+    }
     return categoryStyle[category]?.hoverFill || "#f5f5f5";
   }
 
-  function getFilterFill(category) {
+  // Получает цвет при фильтрации для магазина
+  function getFilterFillForShop(shopId, category) {
+    const shopInfo = shopData[shopId];
+    if (shopInfo && shopInfo.filterFill) {
+      return shopInfo.filterFill;
+    }
     return categoryStyle[category]?.filterFill || "#f5f5f5";
   }
 
-  function getHighlightFill(shopCategoryAttr) {
-    if (!shopCategoryAttr) return "#ffe0b2";
-    const firstCategory = getFirstCategory(shopCategoryAttr);
-    return categoryStyle[firstCategory]?.highlightFill || "#ffe0b2";
+  // Получает цвет подсветки для магазина
+  function getHighlightFillForShop(shopId, category) {
+    const shopInfo = shopData[shopId];
+    if (shopInfo && shopInfo.highlightFill) {
+      return shopInfo.highlightFill;
+    }
+    return categoryStyle[category]?.highlightFill || "#ffe0b2";
   }
 
   function getCategoryText(category) {
@@ -144,33 +132,86 @@ document.addEventListener("DOMContentLoaded", function () {
   // ========== СОХРАНЕНИЕ ОРИГИНАЛЬНЫХ ЦВЕТОВ ==========
   function saveOriginalColors() {
     allShops.forEach(shop => {
+      const shopId = shop.id;
       const shopCategoryAttr = shop.getAttribute("data-category");
       const shapes = getAllShapes(shop);
+      const isStatic = isStaticElement(shop);
+      const firstCategory = getFirstCategory(shopCategoryAttr);
+
+      const originalFillColor = getOriginalFillForShop(shopId, firstCategory);
 
       shapes.forEach(shape => {
-        const existingFill = shape.getAttribute("fill");
         let originalFill;
 
-        if (existingFill && existingFill !== "#fcf2eb" && existingFill !== "#FFFFFF" && existingFill !== "white") {
-          originalFill = existingFill;
+        if (isStatic) {
+          originalFill = shape.getAttribute("fill") || "#fcf2eb";
         } else {
-          const firstCategory = getFirstCategory(shopCategoryAttr);
-          originalFill = categoryStyle[firstCategory]?.originalFill || "#fcf2eb";
+          originalFill = originalFillColor;
         }
 
         shape.setAttribute("data-original-fill", originalFill);
-        shape.style.fill = originalFill;
+        if (!isStatic) {
+          shape.style.fill = originalFill;
+        }
       });
     });
+  }
+
+  // ========== ПРИНУДИТЕЛЬНАЯ УСТАНОВКА ЦВЕТОВ ==========
+  function forceSetOriginalColors() {
+    console.log("Принудительная установка цветов для магазинов...");
+
+    allShops.forEach(shop => {
+      const shopId = shop.id;
+      const shopInfo = shopData[shopId];
+
+      // Пропускаем статичные элементы и элементы без данных
+      if (isStaticElement(shop) || !shopInfo) return;
+
+      const shopCategoryAttr = shop.getAttribute("data-category");
+      const firstCategory = getFirstCategory(shopCategoryAttr);
+      const shapes = getAllShapes(shop);
+
+      // Получаем все цвета из данных магазина или категории
+      const originalColor = getOriginalFillForShop(shopId, firstCategory);
+      const hoverColor = getHoverFillForShop(shopId, firstCategory);
+      const filterColor = getFilterFillForShop(shopId, firstCategory);
+      const highlightColor = getHighlightFillForShop(shopId, firstCategory);
+
+      // Сохраняем цвета в атрибуты группы для быстрого доступа
+      shop.setAttribute("data-original-color", originalColor);
+      shop.setAttribute("data-hover-color", hoverColor);
+      shop.setAttribute("data-filter-color", filterColor);
+      shop.setAttribute("data-highlight-color", highlightColor);
+
+      // Принудительно устанавливаем оригинальный цвет всем элементам
+      shapes.forEach(shape => {
+        // Удаляем атрибут fill, чтобы он не мешал
+        if (shape.hasAttribute("fill")) {
+          shape.removeAttribute("fill");
+        }
+        // Устанавливаем цвет через style
+        shape.style.fill = originalColor;
+        shape.setAttribute("data-original-fill", originalColor);
+      });
+
+      console.log(
+        `✓ Цвета установлены для ${shopId}: original=${originalColor}, hover=${hoverColor}, filter=${filterColor}`,
+      );
+    });
+
+    console.log("Принудительная установка цветов завершена");
   }
 
   // ========== ПОДСВЕТКА КОНКРЕТНОГО МАГАЗИНА ==========
   function highlightShop(shopId) {
     allShops.forEach(shop => {
+      if (isStaticElement(shop)) return;
+
       const shapes = getAllShapes(shop);
+      const originalColor = shop.getAttribute("data-original-color");
       shapes.forEach(shape => {
-        const originalFill = shape.getAttribute("data-original-fill");
-        shape.style.fill = originalFill || "#fcf2eb";
+        shape.style.fill = originalColor || "#fcf2eb";
       });
     });
 
@@ -180,10 +221,9 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
     const shop = document.getElementById(shopId);
-    if (!shop) return;
+    if (!shop || isStaticElement(shop)) return;
 
-    const shopCategoryAttr = shop.getAttribute("data-category");
-    const highlightColor = getHighlightFill(shopCategoryAttr);
+    const highlightColor = shop.getAttribute("data-highlight-color");
     const shapes = getAllShapes(shop);
 
     shapes.forEach(shape => {
@@ -234,42 +274,69 @@ document.addEventListener("DOMContentLoaded", function () {
     currentFilter = category;
 
     allShops.forEach(shop => {
+      const isStatic = isStaticElement(shop);
+
+      // Статичные элементы не меняются
+      if (isStatic) {
+        const shapes = getAllShapes(shop);
+        shapes.forEach(shape => {
+          shape.style.fill = shape.getAttribute("data-original-fill") || "#fcf2eb";
+          shape.style.opacity = "1";
+        });
+        shop.style.opacity = "1";
+        shop.style.filter = "none";
+        return;
+      }
+
+      const shopId = shop.id;
       const shopCategoryAttr = shop.getAttribute("data-category");
       const shapes = getAllShapes(shop);
       const texts = shop.querySelectorAll("text");
       const isMatching = matchesCategory(shopCategoryAttr, category);
-      const firstCategory = getFirstCategory(shopCategoryAttr);
+
+      // Получаем цвета из атрибутов группы
+      const originalColor = shop.getAttribute("data-original-color");
+      const filterColor = shop.getAttribute("data-filter-color");
+      const highlightColor = shop.getAttribute("data-highlight-color");
+
+      // Получаем информацию о цвете текста из данных магазина
+      const shopInfo = shopData[shopId];
+      const textColor = shopInfo?.textColor || "#164680";
+      const textBgColor = shopInfo?.textBgColor || null;
 
       if (category === "all") {
         shapes.forEach(shape => {
           if (shop.id === highlightedShopId) {
-            shape.style.fill = getHighlightFill(shopCategoryAttr);
+            shape.style.fill = highlightColor;
           } else {
-            shape.style.fill = shape.getAttribute("data-original-fill") || "#fcf2eb";
+            shape.style.fill = originalColor;
           }
         });
         texts.forEach(text => {
           text.style.opacity = "1";
-          text.style.fill = "";
+          text.style.fill = textColor; // Применяем цвет текста
+          text.style.visibility = "visible";
         });
         shop.style.opacity = "1";
         shop.style.filter = "none";
       } else if (isMatching) {
         shapes.forEach(shape => {
-          shape.style.fill = getFilterFill(firstCategory);
+          shape.style.fill = filterColor;
         });
         texts.forEach(text => {
           text.style.opacity = "1";
-          text.style.fill = "";
+          text.style.fill = textColor; // Применяем цвет текста
+          text.style.visibility = "visible";
         });
         shop.style.opacity = "1";
         shop.style.filter = "drop-shadow(0 0 3px rgba(0,0,0,0.2))";
       } else {
         shapes.forEach(shape => {
-          shape.style.fill = shape.getAttribute("data-original-fill") || "#fcf2eb";
+          shape.style.fill = originalColor;
         });
         texts.forEach(text => {
           text.style.opacity = "0.4";
+          text.style.fill = textColor; // Сохраняем цвет текста, но делаем полупрозрачным
         });
         shop.style.opacity = "0.3";
         shop.style.filter = "grayscale(0.7) brightness(0.6)";
@@ -284,7 +351,6 @@ document.addEventListener("DOMContentLoaded", function () {
       staticElement.classList.add("no-hover");
       staticElement.style.pointerEvents = "none";
 
-      // Также отключаем pointer-events для всех дочерних элементов
       const children = staticElement.querySelectorAll("*");
       children.forEach(child => {
         child.style.pointerEvents = "none";
@@ -295,7 +361,6 @@ document.addEventListener("DOMContentLoaded", function () {
 
   // ========== ДОБАВЛЕНИЕ НАЗВАНИЙ ВНУТРИ SVG ==========
   function addSVGLabels() {
-    // Создаём отдельный слой для всех надписей (если ещё не создан)
     let labelsLayer = document.getElementById("shop-labels-layer");
     if (!labelsLayer) {
       labelsLayer = document.createElementNS("http://www.w3.org/2000/svg", "g");
@@ -305,6 +370,8 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
     allShops.forEach(shop => {
+      if (isStaticElement(shop)) return;
+
       const shopId = shop.id;
       const shopInfo = shopData[shopId];
       if (!shopInfo) return;
@@ -312,7 +379,11 @@ document.addEventListener("DOMContentLoaded", function () {
       const shopName = shopInfo.name;
       const shopNameSize = shopInfo.namesize || 12;
 
-      // Ищем ВСЕ графические элементы
+      // Получаем цвет текста из данных магазина или используем стандартный
+      const textColor = shopInfo.textColor || "#164680";
+      const textBgColor = shopInfo.textBgColor || null;
+      const textBgOpacity = shopInfo.textBgOpacity !== undefined ? shopInfo.textBgOpacity : 0.92;
+
       const shapes = getAllShapes(shop);
       let minX = Infinity,
         minY = Infinity;
@@ -331,38 +402,48 @@ document.addEventListener("DOMContentLoaded", function () {
         }
       });
 
-      // Если ничего не нашли, пробуем найти по координатам из атрибутов
       if (minX === Infinity) {
-        // Пробуем найти circle и взять его центр
-        const circle = shop.querySelector("circle");
-        if (circle) {
-          const cx = parseFloat(circle.getAttribute("cx"));
-          const cy = parseFloat(circle.getAttribute("cy"));
-          const r = parseFloat(circle.getAttribute("r")) || 35;
+        const rect = shop.querySelector("rect");
+        if (rect) {
+          const x = parseFloat(rect.getAttribute("x")) || 0;
+          const y = parseFloat(rect.getAttribute("y")) || 0;
+          const w = parseFloat(rect.getAttribute("width")) || 0;
+          const h = parseFloat(rect.getAttribute("height")) || 0;
+          const transform = rect.getAttribute("transform");
 
-          if (!isNaN(cx) && !isNaN(cy)) {
-            minX = cx - r;
-            minY = cy - r;
-            maxX = cx + r;
-            maxY = cy + r;
-          }
-        }
+          if (transform) {
+            const matrixMatch = transform.match(/matrix\(([^)]+)\)/);
+            if (matrixMatch) {
+              const values = matrixMatch[1].split(",").map(parseFloat);
+              const a = values[0],
+                b = values[1],
+                c = values[2],
+                d = values[3],
+                e = values[4],
+                f = values[5];
 
-        // Если всё ещё нет, пробуем rect
-        if (minX === Infinity) {
-          const rect = shop.querySelector("rect");
-          if (rect) {
-            const x = parseFloat(rect.getAttribute("x"));
-            const y = parseFloat(rect.getAttribute("y"));
-            const w = parseFloat(rect.getAttribute("width"));
-            const h = parseFloat(rect.getAttribute("height"));
+              const corners = [
+                { x: x, y: y },
+                { x: x + w, y: y },
+                { x: x, y: y + h },
+                { x: x + w, y: y + h },
+              ];
 
-            if (!isNaN(x) && !isNaN(y) && !isNaN(w) && !isNaN(h)) {
-              minX = x;
-              minY = y;
-              maxX = x + w;
-              maxY = y + h;
+              const transformedCorners = corners.map(corner => ({
+                x: a * corner.x + c * corner.y + e,
+                y: b * corner.x + d * corner.y + f,
+              }));
+
+              minX = Math.min(...transformedCorners.map(c => c.x));
+              minY = Math.min(...transformedCorners.map(c => c.y));
+              maxX = Math.max(...transformedCorners.map(c => c.x));
+              maxY = Math.max(...transformedCorners.map(c => c.y));
             }
+          } else if (!isNaN(x) && !isNaN(y) && !isNaN(w) && !isNaN(h)) {
+            minX = x;
+            minY = y;
+            maxX = x + w;
+            maxY = y + h;
           }
         }
 
@@ -370,36 +451,57 @@ document.addEventListener("DOMContentLoaded", function () {
       }
 
       const centerX = (minX + maxX) / 2;
-      const centerY = (minY + maxY) / 2;
+      let centerY = (minY + maxY) / 2;
 
-      // Создаём группу для текста с фоном
+      // Если задано смещение текста
+      if (shopInfo.textOffsetY) {
+        centerY += shopInfo.textOffsetY;
+      }
+
       const textGroup = document.createElementNS("http://www.w3.org/2000/svg", "g");
       textGroup.setAttribute("class", "shop-label");
       textGroup.setAttribute("data-shop-id", shopId);
 
-      // Вычисляем ширину текста
       const textWidth = shopName.length * (shopNameSize * 0.6);
       const textHeight = shopNameSize;
 
-      // Добавляем полупрозрачный фон под текст
-      const bgRect = document.createElementNS("http://www.w3.org/2000/svg", "rect");
-      bgRect.setAttribute("x", centerX - textWidth / 2 - 8);
-      bgRect.setAttribute("y", centerY - textHeight / 2 - 4);
-      bgRect.setAttribute("width", textWidth + 16);
-      bgRect.setAttribute("height", textHeight + 8);
-      bgRect.setAttribute("rx", "6");
-      bgRect.setAttribute("ry", "6");
-      bgRect.setAttribute("fill", "white");
-      bgRect.setAttribute("fill-opacity", "0.0"); //скрываем
-      bgRect.setAttribute("stroke", "#164680");
-      bgRect.setAttribute("stroke-width", "1");
-      bgRect.setAttribute("stroke-opacity", "0.0"); //скрываем
+      // Создаем фон для текста (если указан цвет фона)
+      if (textBgColor) {
+        const bgRect = document.createElementNS("http://www.w3.org/2000/svg", "rect");
+        bgRect.setAttribute("x", centerX - textWidth / 2 - 8);
+        bgRect.setAttribute("y", centerY - textHeight / 2 - 4);
+        bgRect.setAttribute("width", textWidth + 16);
+        bgRect.setAttribute("height", textHeight + 8);
+        bgRect.setAttribute("rx", "6");
+        bgRect.setAttribute("ry", "6");
+        bgRect.setAttribute("fill", textBgColor);
+        bgRect.setAttribute("fill-opacity", textBgOpacity);
+        bgRect.setAttribute("stroke", textColor);
+        bgRect.setAttribute("stroke-width", "1");
+        bgRect.setAttribute("stroke-opacity", "0.3");
+        textGroup.appendChild(bgRect);
+      } else {
+        // Стандартный фон
+        const bgRect = document.createElementNS("http://www.w3.org/2000/svg", "rect");
+        bgRect.setAttribute("x", centerX - textWidth / 2 - 8);
+        bgRect.setAttribute("y", centerY - textHeight / 2 - 4);
+        bgRect.setAttribute("width", textWidth + 16);
+        bgRect.setAttribute("height", textHeight + 8);
+        bgRect.setAttribute("rx", "6");
+        bgRect.setAttribute("ry", "6");
+        bgRect.setAttribute("fill", "white");
+        bgRect.setAttribute("fill-opacity", "0.0");
+        bgRect.setAttribute("stroke", "#164680");
+        bgRect.setAttribute("stroke-width", "1");
+        bgRect.setAttribute("stroke-opacity", "0.0");
+        textGroup.appendChild(bgRect);
+      }
 
       // Создаём сам текст
       const text = document.createElementNS("http://www.w3.org/2000/svg", "text");
       text.setAttribute("x", centerX);
       text.setAttribute("y", centerY);
-      text.setAttribute("fill", "#164680");
+      text.setAttribute("fill", textColor);
       text.setAttribute("font-size", shopNameSize);
       text.setAttribute("font-family", "Ubuntu, sans-serif");
       text.setAttribute("font-weight", "500");
@@ -408,12 +510,14 @@ document.addEventListener("DOMContentLoaded", function () {
       text.setAttribute("pointer-events", "none");
       text.textContent = shopName;
 
-      // Добавляем фон и текст в группу
-      textGroup.appendChild(bgRect);
+      // Добавляем текст в группу
       textGroup.appendChild(text);
-
-      // Добавляем группу в отдельный слой
       labelsLayer.appendChild(textGroup);
+
+      // Для отладки
+      if (shopInfo.textColor) {
+        console.log(`Для ${shopId} установлен цвет текста: ${textColor}`);
+      }
     });
   }
 
@@ -524,6 +628,9 @@ document.addEventListener("DOMContentLoaded", function () {
   // ========== ОБРАБОТЧИКИ ДЛЯ МАГАЗИНОВ ==========
   function attachShopEventHandlers() {
     allShops.forEach(shop => {
+      if (isStaticElement(shop)) return;
+
+      const shopId = shop.id;
       shop.style.cursor = "pointer";
 
       shop.addEventListener("click", event => {
@@ -559,46 +666,47 @@ document.addEventListener("DOMContentLoaded", function () {
         }
       });
 
-      // Обработчик mouseenter - меняем цвет всех элементов
+      // Обработчик mouseenter - используем цвет из атрибута группы
       shop.addEventListener("mouseenter", () => {
         const shopCategoryAttr = shop.getAttribute("data-category");
         const isInactive = currentFilter !== "all" && !matchesCategory(shopCategoryAttr, currentFilter);
         if (isInactive) return;
 
         const shapes = getAllShapes(shop);
-        const firstCategory = getFirstCategory(shopCategoryAttr);
-        const hoverColor = getHoverFill(firstCategory);
+        const hoverColor = shop.getAttribute("data-hover-color");
 
         shapes.forEach(shape => {
           shape.style.fill = hoverColor;
         });
       });
 
-      // Обработчик mouseleave - восстанавливаем цвета
+      // Обработчик mouseleave - восстанавливаем цвет из атрибута группы
       shop.addEventListener("mouseleave", () => {
         const shopCategoryAttr = shop.getAttribute("data-category");
         const shapes = getAllShapes(shop);
         const isInactive = currentFilter !== "all" && !matchesCategory(shopCategoryAttr, currentFilter);
-        const firstCategory = getFirstCategory(shopCategoryAttr);
+        const originalColor = shop.getAttribute("data-original-color");
+        const filterColor = shop.getAttribute("data-filter-color");
+        const highlightColor = shop.getAttribute("data-highlight-color");
 
         if (isInactive) {
           shapes.forEach(shape => {
-            shape.style.fill = shape.getAttribute("data-original-fill") || "#fcf2eb";
+            shape.style.fill = originalColor;
           });
           shop.style.filter = "grayscale(0.7) brightness(0.6)";
         } else if (currentFilter !== "all" && matchesCategory(shopCategoryAttr, currentFilter)) {
           shapes.forEach(shape => {
-            shape.style.fill = getFilterFill(firstCategory);
+            shape.style.fill = filterColor;
           });
           shop.style.filter = "drop-shadow(0 0 3px rgba(0,0,0,0.2))";
         } else {
           if (shop.id === highlightedShopId) {
             shapes.forEach(shape => {
-              shape.style.fill = getHighlightFill(shopCategoryAttr);
+              shape.style.fill = highlightColor;
             });
           } else {
             shapes.forEach(shape => {
-              shape.style.fill = shape.getAttribute("data-original-fill") || "#fcf2eb";
+              shape.style.fill = originalColor;
             });
           }
           shop.style.filter = "none";
@@ -622,7 +730,6 @@ document.addEventListener("DOMContentLoaded", function () {
   function init() {
     console.log("Инициализация SVG карты...");
 
-    // Убираем жесткие размеры SVG
     svgElement.removeAttribute("width");
     svgElement.removeAttribute("height");
     svgElement.setAttribute("width", "100%");
@@ -632,17 +739,17 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
     saveOriginalColors();
+    forceSetOriginalColors(); // ПРИНУДИТЕЛЬНАЯ УСТАНОВКА ЦВЕТОВ
     initPanZoom();
     addSVGLabels();
     attachShopEventHandlers();
     initFilters();
-    disableStaticHover(); // Отключаем hover для статичных элементов
+    disableStaticHover();
     applyFilter("all");
     initAutoCenterAndHighlight();
     window.addEventListener("resize", handleResize);
     setTimeout(adjustTextVisibility, 500);
 
-    // Настройка закрытия попапа
     const closeBtn = document.querySelector(".close-btn");
     if (closeBtn) closeBtn.addEventListener("click", closePopup);
     window.addEventListener("click", event => {
