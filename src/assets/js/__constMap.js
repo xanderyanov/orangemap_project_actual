@@ -158,7 +158,7 @@ const shopData = {
   // ========== МАГАЗИНЫ ==========
   mag_ashan: {
     name: "Ашан",
-    namesize: 18,
+    namesize: 60,
     desc: "Гипермаркет.",
     category: "mag",
     link: "/ru/shops/ashan",
@@ -382,7 +382,7 @@ const shopData = {
   },
   mag_lenta: {
     name: "Лента",
-    namesize: 18,
+    namesize: 60,
     desc: "Гипермаркет.",
     category: "mag",
     link: "/ru/shops/lenta",
@@ -954,7 +954,7 @@ const shopData = {
   },
   serv_lego: {
     name: "Lego",
-    namesize: 18,
+    namesize: 12,
     desc: "Детский центр.",
     category: "serv",
     link: "/ru/services/lego",

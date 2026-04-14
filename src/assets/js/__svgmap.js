@@ -26,7 +26,7 @@ document.addEventListener("DOMContentLoaded", function () {
             fit: true,
             center: true,
             minZoom: 0.3,
-            maxZoom: 5,
+            maxZoom: 10,
             zoomScaleSensitivity: 0.2,
           });
           console.log("PanZoom инициализирован");
@@ -92,14 +92,6 @@ document.addEventListener("DOMContentLoaded", function () {
       filterFill: "#f3e5f5",
       highlightFill: "#e1bee7",
     },
-    off: {
-      name: "Офис",
-      icon: "🏢",
-      originalFill: "#e0f7fa",
-      hoverFill: "#e0f7fa",
-      filterFill: "#e0f7fa",
-      highlightFill: "#b2ebf2",
-    },
   };
 
   // ========== ВСПОМОГАТЕЛЬНЫЕ ФУНКЦИИ ==========
@@ -140,30 +132,34 @@ document.addEventListener("DOMContentLoaded", function () {
       rest: "🍽️ Ресторан",
       baz: "🛒 Оранжевый базар",
       pav: "🏪 Павильон",
-      off: "🏢 Офис",
     };
     return texts[category] || category;
+  }
+
+  // Получает все графические элементы в магазине
+  function getAllShapes(shop) {
+    return shop.querySelectorAll("path:not(.text-label), circle, rect, ellipse, polygon, line");
   }
 
   // ========== СОХРАНЕНИЕ ОРИГИНАЛЬНЫХ ЦВЕТОВ ==========
   function saveOriginalColors() {
     allShops.forEach(shop => {
       const shopCategoryAttr = shop.getAttribute("data-category");
-      const shapes = shop.querySelectorAll("path:not(.text-label)");
+      const shapes = getAllShapes(shop);
 
-      shapes.forEach(path => {
-        const existingFill = path.getAttribute("fill");
+      shapes.forEach(shape => {
+        const existingFill = shape.getAttribute("fill");
         let originalFill;
 
-        if (existingFill && existingFill !== "#fcf2eb") {
+        if (existingFill && existingFill !== "#fcf2eb" && existingFill !== "#FFFFFF" && existingFill !== "white") {
           originalFill = existingFill;
         } else {
           const firstCategory = getFirstCategory(shopCategoryAttr);
           originalFill = categoryStyle[firstCategory]?.originalFill || "#fcf2eb";
         }
 
-        path.setAttribute("data-original-fill", originalFill);
-        path.style.fill = originalFill;
+        shape.setAttribute("data-original-fill", originalFill);
+        shape.style.fill = originalFill;
       });
     });
   }
@@ -171,9 +167,9 @@ document.addEventListener("DOMContentLoaded", function () {
   // ========== ПОДСВЕТКА КОНКРЕТНОГО МАГАЗИНА ==========
   function highlightShop(shopId) {
     allShops.forEach(shop => {
-      const shapes = shop.querySelectorAll("path:not(.text-label)");
-      const originalFill = shop.getAttribute("data-original-fill");
+      const shapes = getAllShapes(shop);
       shapes.forEach(shape => {
+        const originalFill = shape.getAttribute("data-original-fill");
         shape.style.fill = originalFill || "#fcf2eb";
       });
     });
@@ -188,7 +184,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
     const shopCategoryAttr = shop.getAttribute("data-category");
     const highlightColor = getHighlightFill(shopCategoryAttr);
-    const shapes = shop.querySelectorAll("path:not(.text-label)");
+    const shapes = getAllShapes(shop);
 
     shapes.forEach(shape => {
       shape.style.fill = highlightColor;
@@ -239,7 +235,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
     allShops.forEach(shop => {
       const shopCategoryAttr = shop.getAttribute("data-category");
-      const shapes = shop.querySelectorAll("path:not(.text-label)");
+      const shapes = getAllShapes(shop);
       const texts = shop.querySelectorAll("text");
       const isMatching = matchesCategory(shopCategoryAttr, category);
       const firstCategory = getFirstCategory(shopCategoryAttr);
@@ -281,6 +277,22 @@ document.addEventListener("DOMContentLoaded", function () {
     });
   }
 
+  // ========== ОТКЛЮЧЕНИЕ HOVER ДЛЯ СТАТИЧНЫХ ЭЛЕМЕНТОВ ==========
+  function disableStaticHover() {
+    const staticElements = svgElement.querySelectorAll('g:not([data-category]), g[data-category="static"]');
+    staticElements.forEach(staticElement => {
+      staticElement.classList.add("no-hover");
+      staticElement.style.pointerEvents = "none";
+
+      // Также отключаем pointer-events для всех дочерних элементов
+      const children = staticElement.querySelectorAll("*");
+      children.forEach(child => {
+        child.style.pointerEvents = "none";
+      });
+    });
+    console.log(`Отключено наведение для ${staticElements.length} статичных элементов`);
+  }
+
   // ========== ДОБАВЛЕНИЕ НАЗВАНИЙ ВНУТРИ SVG ==========
   function addSVGLabels() {
     // Создаём отдельный слой для всех надписей (если ещё не создан)
@@ -300,23 +312,62 @@ document.addEventListener("DOMContentLoaded", function () {
       const shopName = shopInfo.name;
       const shopNameSize = shopInfo.namesize || 12;
 
-      const paths = shop.querySelectorAll("path");
+      // Ищем ВСЕ графические элементы
+      const shapes = getAllShapes(shop);
       let minX = Infinity,
         minY = Infinity;
       let maxX = -Infinity,
         maxY = -Infinity;
 
-      paths.forEach(path => {
+      shapes.forEach(shape => {
         try {
-          const bbox = path.getBBox();
+          const bbox = shape.getBBox();
           minX = Math.min(minX, bbox.x);
           minY = Math.min(minY, bbox.y);
           maxX = Math.max(maxX, bbox.x + bbox.width);
           maxY = Math.max(maxY, bbox.y + bbox.height);
-        } catch (e) {}
+        } catch (e) {
+          console.warn(`Ошибка при получении bbox для ${shape.tagName} в ${shopId}:`, e);
+        }
       });
 
-      if (minX === Infinity) return;
+      // Если ничего не нашли, пробуем найти по координатам из атрибутов
+      if (minX === Infinity) {
+        // Пробуем найти circle и взять его центр
+        const circle = shop.querySelector("circle");
+        if (circle) {
+          const cx = parseFloat(circle.getAttribute("cx"));
+          const cy = parseFloat(circle.getAttribute("cy"));
+          const r = parseFloat(circle.getAttribute("r")) || 35;
+
+          if (!isNaN(cx) && !isNaN(cy)) {
+            minX = cx - r;
+            minY = cy - r;
+            maxX = cx + r;
+            maxY = cy + r;
+          }
+        }
+
+        // Если всё ещё нет, пробуем rect
+        if (minX === Infinity) {
+          const rect = shop.querySelector("rect");
+          if (rect) {
+            const x = parseFloat(rect.getAttribute("x"));
+            const y = parseFloat(rect.getAttribute("y"));
+            const w = parseFloat(rect.getAttribute("width"));
+            const h = parseFloat(rect.getAttribute("height"));
+
+            if (!isNaN(x) && !isNaN(y) && !isNaN(w) && !isNaN(h)) {
+              minX = x;
+              minY = y;
+              maxX = x + w;
+              maxY = y + h;
+            }
+          }
+        }
+
+        if (minX === Infinity) return;
+      }
 
       const centerX = (minX + maxX) / 2;
       const centerY = (minY + maxY) / 2;
@@ -326,7 +377,7 @@ document.addEventListener("DOMContentLoaded", function () {
       textGroup.setAttribute("class", "shop-label");
       textGroup.setAttribute("data-shop-id", shopId);
 
-      // Вычисляем ширину текста без создания DOM-элемента
+      // Вычисляем ширину текста
       const textWidth = shopName.length * (shopNameSize * 0.6);
       const textHeight = shopNameSize;
 
@@ -339,10 +390,10 @@ document.addEventListener("DOMContentLoaded", function () {
       bgRect.setAttribute("rx", "6");
       bgRect.setAttribute("ry", "6");
       bgRect.setAttribute("fill", "white");
-      bgRect.setAttribute("fill-opacity", "0.92");
+      bgRect.setAttribute("fill-opacity", "0.0"); //скрываем
       bgRect.setAttribute("stroke", "#164680");
       bgRect.setAttribute("stroke-width", "1");
-      bgRect.setAttribute("stroke-opacity", "0.3");
+      bgRect.setAttribute("stroke-opacity", "0.0"); //скрываем
 
       // Создаём сам текст
       const text = document.createElementNS("http://www.w3.org/2000/svg", "text");
@@ -379,17 +430,17 @@ document.addEventListener("DOMContentLoaded", function () {
       return false;
     }
 
-    const paths = shop.querySelectorAll("path");
-    if (!paths.length) return false;
+    const shapes = getAllShapes(shop);
+    if (!shapes.length) return false;
 
     let minX = Infinity,
       minY = Infinity;
     let maxX = -Infinity,
       maxY = -Infinity;
 
-    paths.forEach(path => {
+    shapes.forEach(shape => {
       try {
-        const bbox = path.getBBox();
+        const bbox = shape.getBBox();
         minX = Math.min(minX, bbox.x);
         minY = Math.min(minY, bbox.y);
         maxX = Math.max(maxX, bbox.x + bbox.width);
@@ -508,22 +559,25 @@ document.addEventListener("DOMContentLoaded", function () {
         }
       });
 
+      // Обработчик mouseenter - меняем цвет всех элементов
       shop.addEventListener("mouseenter", () => {
         const shopCategoryAttr = shop.getAttribute("data-category");
         const isInactive = currentFilter !== "all" && !matchesCategory(shopCategoryAttr, currentFilter);
         if (isInactive) return;
 
-        const shapes = shop.querySelectorAll("path:not(.text-label)");
+        const shapes = getAllShapes(shop);
         const firstCategory = getFirstCategory(shopCategoryAttr);
         const hoverColor = getHoverFill(firstCategory);
+
         shapes.forEach(shape => {
           shape.style.fill = hoverColor;
         });
       });
 
+      // Обработчик mouseleave - восстанавливаем цвета
       shop.addEventListener("mouseleave", () => {
         const shopCategoryAttr = shop.getAttribute("data-category");
-        const shapes = shop.querySelectorAll("path:not(.text-label)");
+        const shapes = getAllShapes(shop);
         const isInactive = currentFilter !== "all" && !matchesCategory(shopCategoryAttr, currentFilter);
         const firstCategory = getFirstCategory(shopCategoryAttr);
 
@@ -582,6 +636,7 @@ document.addEventListener("DOMContentLoaded", function () {
     addSVGLabels();
     attachShopEventHandlers();
     initFilters();
+    disableStaticHover(); // Отключаем hover для статичных элементов
     applyFilter("all");
     initAutoCenterAndHighlight();
     window.addEventListener("resize", handleResize);
