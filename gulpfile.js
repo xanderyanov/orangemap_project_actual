@@ -40,6 +40,15 @@ gulp.task("less", function () {
     .pipe(gulp.dest("build/assets/css"));
 });
 
+gulp.task("less2", function () {
+  return gulp
+    .src("src/assets/less/__svgmap.less")
+    .pipe(sourcemaps.init())
+    .pipe(less())
+    .pipe(sourcemaps.write("."))
+    .pipe(gulp.dest("build/assets/css"));
+});
+
 // Вендорные CSS
 var vendorsCssFiles = [
   "node_modules/@fancyapps/fancybox/dist/jquery.fancybox.min.css",
@@ -120,12 +129,16 @@ gulp.task("icomoon", function () {
 // Сборка
 gulp.task(
   "build",
-  gulp.series("clean", gulp.parallel("less", "vendorsCss", "pug", "image", "vendorsJs", "myJs", "fonts", "icomoon")),
+  gulp.series(
+    "clean",
+    gulp.parallel("less", "less2", "vendorsCss", "pug", "image", "vendorsJs", "myJs", "fonts", "icomoon"),
+  ),
 );
 
 // Вотчер
 gulp.task("watch", function () {
   gulp.watch("src/assets/less/**/*.less", gulp.series("less"));
+  gulp.watch("src/assets/less/**/*.less", gulp.series("less2"));
   gulp.watch("src/assets/img/**/*.*", gulp.series("image"));
   gulp.watch("src/assets/js/*.js", gulp.series("myJs"));
   gulp.watch("src/**/*.pug", gulp.series("pug"));

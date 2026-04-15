@@ -1619,6 +1619,7 @@ const shopData = {
 
 // main.js
 document.addEventListener("DOMContentLoaded", function () {
+  console.log("скрипт карты загружен");
   // ========== ПРОВЕРКА, ЧТО shopData И categoryStyle ЗАГРУЖЕНЫ ==========
   if (typeof shopData === "undefined") {
     console.error("shopData не загружен! Подключите shop-data.js перед этим файлом.");
@@ -1708,7 +1709,7 @@ document.addEventListener("DOMContentLoaded", function () {
   // Получает цвет при наведении для магазина
   function getHoverFillForShop(shopId, category) {
     const shopInfo = shopData[shopId];
-    if (shopInfo && shopInfo.hoverFill) {
+    if (shopInfo && shopInfo.hoverFill && shopInfo.hoverFill !== "") {
       return shopInfo.hoverFill;
     }
     return categoryStyle[category]?.hoverFill || "#f5f5f5";
@@ -1717,7 +1718,7 @@ document.addEventListener("DOMContentLoaded", function () {
   // Получает цвет при фильтрации для магазина
   function getFilterFillForShop(shopId, category) {
     const shopInfo = shopData[shopId];
-    if (shopInfo && shopInfo.filterFill) {
+    if (shopInfo && shopInfo.filterFill && shopInfo.filterFill !== "") {
       return shopInfo.filterFill;
     }
     return categoryStyle[category]?.filterFill || "#f5f5f5";
@@ -1734,11 +1735,11 @@ document.addEventListener("DOMContentLoaded", function () {
 
   function getCategoryText(category) {
     const texts = {
-      mag: "🛍️ Магазин",
-      serv: "🏢 Услуги",
-      rest: "🍽️ Ресторан",
-      baz: "🛒 Оранжевый базар",
-      pav: "🏪 Павильон",
+      mag: "Магазин",
+      serv: "Услуги",
+      rest: "Кафе / Ресторан",
+      baz: "Оранжевый базар",
+      pav: "Павильон",
     };
     return texts[category] || category;
   }
@@ -1862,12 +1863,31 @@ document.addEventListener("DOMContentLoaded", function () {
     const popupDesc = document.getElementById("popup-desc");
     const popupCategory = document.getElementById("popup-category-tag");
     const popupLink = document.getElementById("popup-link");
+    const popupLogo = document.querySelector(".popup-logo img");
 
     if (popupTitle) popupTitle.textContent = data.name;
     if (popupDesc) popupDesc.textContent = data.desc;
     if (popupCategory) {
       popupCategory.textContent = getCategoryText(data.category);
       popupCategory.className = `popup-category category-${data.category}`;
+    }
+
+    // Обработка логотипа
+    if (popupLogo) {
+      if (data.logo && data.logo !== "") {
+        popupLogo.src = data.logo;
+        popupLogo.alt = data.name;
+        popupLogo.style.display = "block";
+        // Показываем родительский контейнер логотипа
+        const logoContainer = document.querySelector(".popup-logo");
+        if (logoContainer) logoContainer.style.display = "flex";
+      } else {
+        popupLogo.src = "";
+        popupLogo.alt = "";
+        popupLogo.style.display = "none";
+        const logoContainer = document.querySelector(".popup-logo");
+        if (logoContainer) logoContainer.style.display = "none";
+      }
     }
 
     if (popupLink) {

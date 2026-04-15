@@ -1,0 +1,182 @@
+.svgMap__area {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+.filters {
+  display: flex;
+  justify-content: center;
+  gap: 15px;
+  margin-bottom: 25px;
+  flex-wrap: wrap;
+}
+.filters .filter-btn {
+  padding: 10px 24px;
+  border: none;
+  border-radius: 30px;
+  background: #ffffff;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+  font-family: "Ubuntu", sans-serif;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  color: #333;
+}
+.filters .filter-btn:hover {
+  background: #e27f21;
+  color: #ffffff;
+  transform: translateY(-2px);
+}
+.filters .filter-btn.active {
+  background: #e27f21;
+  color: #ffffff;
+}
+.mapContainer {
+  background: #ffffff;
+  border-radius: 10px;
+  padding: 10px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+}
+#map-wrapper {
+  position: relative;
+  width: 100%;
+}
+#map-container {
+  position: relative;
+  width: 100%;
+  border: 2px solid #e27f21;
+  border-radius: 10px;
+  overflow: hidden;
+}
+#map-container svg {
+  width: 100%;
+  display: block;
+  background: #fafafa;
+}
+.popup {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.7);
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+.popup-content {
+  background: #ffffff;
+  padding: 30px;
+  border-radius: 20px;
+  max-width: 400px;
+  width: 90%;
+  position: relative;
+  text-align: center;
+  animation: fadeIn 0.3s ease;
+}
+.close-btn {
+  position: absolute;
+  top: 15px;
+  right: 20px;
+  font-size: 28px;
+  cursor: pointer;
+  color: #999;
+  transition: color 0.2s;
+  line-height: 1;
+}
+.close-btn:hover {
+  color: #333;
+}
+.popup-title {
+  color: #164680;
+  margin-bottom: 15px;
+  font-size: 24px;
+  font-family: "Ubuntu", sans-serif;
+}
+.popup-desc {
+  color: #666;
+  line-height: 1.6;
+  margin-bottom: 15px;
+  font-family: "Ubuntu", sans-serif;
+}
+.popup-category {
+  display: inline-block;
+  padding: 6px 15px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 500;
+  font-family: "Ubuntu", sans-serif;
+  margin-bottom: 15px;
+  background: #fff3e0;
+  color: #ff9800;
+}
+.popup-link-wrapper {
+  margin-top: 15px;
+  padding-top: 10px;
+  border-top: 1px solid #eee;
+}
+.popup-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  color: #164680;
+  text-decoration: none;
+  font-size: 14px;
+  font-weight: 500;
+  font-family: "Ubuntu", sans-serif;
+  transition: all 0.2s ease;
+}
+.popup-link:hover {
+  color: #ff9800;
+  gap: 8px;
+}
+.popup-link::after {
+  content: "→";
+  transition: transform 0.2s ease;
+}
+.popup-link:hover::after {
+  transform: translateX(3px);
+}
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+/* Изменение текста на кнопках */
+#map-container svg {
+  width: 100% !important;
+  height: auto !important;
+  min-height: 500px;
+}
+#map-container .svg-pan-zoom_viewport {
+  height: auto !important;
+  min-height: 500px;
+}
+#map-container svg .shop-label {
+  pointer-events: none;
+}
+#map-container svg .shop-label rect {
+  pointer-events: none;
+}
+.popup-logo {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 10px 0;
+}
+.popup-logo img {
+  max-width: 100%;
+  max-height: 100px;
+  object-fit: contain;
+  border-radius: 8px;
+}
+/*# sourceMappingURL=__svgmap.css.map */
+/*# sourceMappingURL=__svgmap.css.map */

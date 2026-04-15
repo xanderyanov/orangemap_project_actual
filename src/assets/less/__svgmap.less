@@ -2,7 +2,6 @@
   display: flex;
   flex-direction: column;
   width: 100%;
-  padding: 20px;
 }
 
 // ============================================================
@@ -29,13 +28,13 @@
     color: #333;
 
     &:hover {
-      background: #164680;
+      background: #e27f21;
       color: #ffffff;
       transform: translateY(-2px);
     }
 
     &.active {
-      background: #164680;
+      background: #e27f21;
       color: #ffffff;
     }
   }
@@ -46,8 +45,8 @@
 // ============================================================
 .mapContainer {
   background: #ffffff;
-  border-radius: 20px;
-  padding: 20px;
+  border-radius: 10px;
+  padding: 10px;
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
   overflow: hidden;
 }
@@ -60,8 +59,8 @@
 #map-container {
   position: relative;
   width: 100%;
-  border: 2px solid #164680;
-  border-radius: 20px;
+  border: 2px solid #e27f21;
+  border-radius: 10px;
   overflow: hidden;
 
   svg {
@@ -137,20 +136,8 @@
   font-family: "Ubuntu", sans-serif;
   margin-bottom: 15px;
 
-  &.category-mag {
-    background: #fff3e0;
-    color: #ff9800;
-  }
-
-  &.category-off {
-    background: #e3f2fd;
-    color: #2196f3;
-  }
-
-  &.category-rest {
-    background: #e8f5e9;
-    color: #4caf50;
-  }
+  background: #fff3e0;
+  color: #ff9800;
 }
 
 .popup-link-wrapper {
@@ -316,4 +303,18 @@
 
 #map-container svg .shop-label rect {
   pointer-events: none;
+}
+
+.popup-logo {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 10px 0;
+}
+
+.popup-logo img {
+  max-width: 100%;
+  max-height: 100px;
+  object-fit: contain;
+  border-radius: 8px;
 }
