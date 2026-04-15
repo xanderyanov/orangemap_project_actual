@@ -1758,6 +1758,7 @@ document.addEventListener("DOMContentLoaded", function () {
       rest: "Кафе / Ресторан",
       baz: "Оранжевый базар",
       pav: "Павильон",
+      floor3: "3 этаж",
     };
     return texts[category] || category;
   }
@@ -2428,6 +2429,23 @@ document.addEventListener("DOMContentLoaded", function () {
   }
 
   init();
+});
+
+// Добавьте в конец вашего main.js (после всех инициализаций)
+window.addEventListener("pageshow", function () {
+  // При возврате на страницу закрываем попап
+  const popup = document.getElementById("shop-popup");
+  if (popup) {
+    popup.style.display = "none";
+  }
+});
+
+window.addEventListener("popstate", function () {
+  // При навигации назад/вперёд закрываем попап
+  const popup = document.getElementById("shop-popup");
+  if (popup) {
+    popup.style.display = "none";
+  }
 });
 
 // Функция, которая выполнится после полной загрузки страницы
