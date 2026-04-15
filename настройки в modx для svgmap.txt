@@ -1,0 +1,71 @@
+<script> 
+	const categoryStyle = {
+		[!Ditto?
+            &documents=`3,58,59,60,639`
+            &tpl=`tpl_category_json`
+            &orderBy=`menuindex`
+            &display=`500`
+            &depth=`10`
+            &showContainers=`1`
+        !]
+	};
+    const shopData = {
+        [!Ditto?
+            &parents=`3,58,59,60,639`
+            &tpl=`tpl_shop_json`
+            &orderBy=`menuindex`
+            &display=`15000`
+            &depth=`10`
+            &showContainers=`1`
+        !]
+    };
+</script>
+
+<script src="/tpl/js/__svgmap.js" defer></script>
+<script src="/tpl/js/svg-pan-zoom.min.js"></script>
+
+
+/*****************/
+tpl_category_json
+
+[+map26_categoryId+]: {
+	name: "[+pagetitle+]",
+	originalFill: "[+originalFill+]",
+	hoverFill: "[+hoverFill+]",
+	filterFill: "[+filterFill+]",
+},
+
+
+/******************/
+tpl_shop_json
+
+[*map26_categoryId@[+parent+]*]_[+map26_id+]: {
+	name: "[!escapeQuotes? &input=`[+pagetitle+]`!]",
+	namesize: [+map26_nameSize+],
+	desc: "[+description:isempty=`[+pagetitle+]`+]",
+	category: "[*map26_categoryId@[+parent+]*]", 
+	link: "[~[+id+]~]",
+	zoom: [+map26_zoom+],
+	originalFill: "[+originalFill+]",
+	hoverFill: "[+hoverFill+]",
+	filterFill: "[+filterFill+]",
+	textColor: "[+textColor+]", 
+	logo: "[+shop_logo+]",
+},
+
+/**********************/
+escapeQuotes
+
+<?php
+return str_replace('"', '\\"', $input);
+
+
+/***********************/
+getMap2026Svg
+
+<?php
+$svgFile = MODX_BASE_PATH . 'tpl/img/orange14.svg';
+if (file_exists($svgFile)) {
+    return file_get_contents($svgFile);
+}
+return '<p>Файл карты не найден</p>';
