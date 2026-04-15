@@ -20,6 +20,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
   // ========== ИНИЦИАЛИЗАЦИЯ PANZOOM ==========
   let panZoomInstance = null;
+  window.panZoomInstance = null;
 
   function initPanZoom() {
     setTimeout(function () {
@@ -34,6 +35,7 @@ document.addEventListener("DOMContentLoaded", function () {
             maxZoom: 10,
             zoomScaleSensitivity: 0.2,
           });
+          window.panZoomInstance = panZoomInstance;
           console.log("PanZoom инициализирован");
         } else {
           console.warn("svgPanZoom не найден, повторная попытка...");
@@ -258,6 +260,8 @@ document.addEventListener("DOMContentLoaded", function () {
 
     highlightedShopId = shopId;
   }
+
+  window.highlightShop = highlightShop;
 
   // ========== ФУНКЦИЯ ПОКАЗА ПОПАПА ==========
   function showPopup(shopId) {
@@ -596,6 +600,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
     return true;
   }
+  window.centerOnShop = centerOnShop;
 
   // ========== ПОЛУЧЕНИЕ ID МАГАЗИНА ИЗ GET-ПАРАМЕТРА ==========
   function getCurrentShopFromURL() {
@@ -828,3 +833,95 @@ window.addEventListener("popstate", function () {
     popup.style.display = "none";
   }
 });
+
+// ========== УНИВЕРСАЛЬНОЕ ЦЕНТРИРОВАНИЕ ПО БЛОКУ #current-shop ==========
+(function () {
+  function centerMapOnShop(shopId, zoomLevel) {
+    if (!window.panZoomInstance) {
+      console.warn("PanZoom не инициализирован");
+      return false;
+    }
+
+    var shop = document.getElementById(shopId);
+    if (!shop) {
+      console.warn("Элемент с id=" + shopId + " не найден");
+      return false;
+    }
+
+    // Получаем позицию элемента на странице
+    var shopRect = shop.getBoundingClientRect();
+    var svgRect = document.querySelector("#map-container svg").getBoundingClientRect();
+
+    // Вычисляем центр элемента относительно SVG
+    var centerX = shopRect.left + shopRect.width / 2 - svgRect.left;
+    var centerY = shopRect.top + shopRect.height / 2 - svgRect.top;
+
+    console.log("Центр элемента (отладка):", centerX, centerY);
+
+    // ========== ОТЛАДКА: Рисуем красный кружок в центре ==========
+    // Удаляем старый кружок, если есть
+    // var oldDebug = document.getElementById("debug-center-circle");
+    // if (oldDebug) oldDebug.remove();
+
+    // var debugCircle = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+    // debugCircle.setAttribute("id", "debug-center-circle");
+    // debugCircle.setAttribute("cx", centerX);
+    // debugCircle.setAttribute("cy", centerY);
+    // debugCircle.setAttribute("r", "15");
+    // debugCircle.setAttribute("fill", "red");
+    // debugCircle.setAttribute("fill-opacity", "0.7");
+    // debugCircle.setAttribute("stroke", "yellow");
+    // debugCircle.setAttribute("stroke-width", "3");
+    // document.querySelector("#map-container svg").appendChild(debugCircle);
+    // console.log("Красный кружок добавлен в центр элемента");
+    // ============================================================
+
+    // Сбрасываем и устанавливаем зум
+    window.panZoomInstance.reset();
+    window.panZoomInstance.zoom(zoomLevel);
+
+    setTimeout(function () {
+      var sizes = window.panZoomInstance.getSizes();
+      var currentZoom = window.panZoomInstance.getZoom();
+
+      var panX = sizes.width / 2 - centerX * currentZoom;
+      var panY = sizes.height / 2 - centerY * currentZoom;
+
+      console.log("Панорамирование:", panX, panY);
+
+      window.panZoomInstance.pan({
+        x: panX,
+        y: panY,
+      });
+    }, 100);
+
+    if (typeof window.highlightShop === "function") {
+      window.highlightShop(shopId);
+    }
+
+    return true;
+  }
+
+  setTimeout(function () {
+    var block = document.getElementById("current-shop");
+    if (!block) return;
+
+    var shopId = block.getAttribute("data-shop-id");
+    var zoom = parseFloat(block.getAttribute("data-zoom"));
+    var offsetY = parseFloat(block.getAttribute("data-offset-y")) || 0;
+
+    if (!shopId) return;
+    var finalZoom = !isNaN(zoom) && zoom > 0 ? zoom : 2.0;
+
+    console.log("Центрирование по #current-shop: " + shopId + ", zoom=" + finalZoom);
+
+    var checkInterval = setInterval(function () {
+      if (window.panZoomInstance && document.getElementById(shopId)) {
+        clearInterval(checkInterval);
+        setTimeout(function () {
+          centerMapOnShop(shopId, finalZoom);
+        }, 300);
+      }
+    }, 200);
+  }, 500);
+})();
