@@ -53,6 +53,22 @@ tpl_shop_json
 	logo: "[+shop_logo+]",
 },
 
+новый
+[+map26_id+]: {
+	name: "[!escapeQuotes? &input=`[+pagetitle+]`!]",
+	namesize: [+map26_nameSize+],
+	desc: "[+description:isempty=`[+pagetitle+]`+]",
+	category: "[*map26_categoryId@[+parent+]*]", 
+	link: "[~[+id+]~]",
+	zoom: [+map26_zoom+],
+	originalFill: "[+originalFill+]",
+	hoverFill: "[+hoverFill+]",
+	filterFill: "[+filterFill+]",
+	textColor: "[+textColor+]", 
+	logo: "[+shop_logo+]",
+	textOffsetY: [+textOffsetY+],
+},
+
 /**********************/
 escapeQuotes
 

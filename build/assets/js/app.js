@@ -1733,6 +1733,24 @@ document.addEventListener("DOMContentLoaded", function () {
     return categoryStyle[category]?.highlightFill || "#ffe0b2";
   }
 
+  // Получает обычный цвет текста для магазина
+  function getTextColorForShop(shopId) {
+    const shopInfo = shopData[shopId];
+    if (shopInfo && shopInfo.textColor) {
+      return shopInfo.textColor;
+    }
+    return "#164680";
+  }
+
+  // Получает цвет текста при наведении для магазина
+  function getTextHoverColorForShop(shopId) {
+    const shopInfo = shopData[shopId];
+    if (shopInfo && shopInfo.textHoverColor) {
+      return shopInfo.textHoverColor;
+    }
+    return "#ff6600";
+  }
+
   function getCategoryText(category) {
     const texts = {
       mag: "Магазин",
@@ -1785,39 +1803,39 @@ document.addEventListener("DOMContentLoaded", function () {
       const shopId = shop.id;
       const shopInfo = shopData[shopId];
 
-      // Пропускаем статичные элементы и элементы без данных
       if (isStaticElement(shop) || !shopInfo) return;
 
       const shopCategoryAttr = shop.getAttribute("data-category");
       const firstCategory = getFirstCategory(shopCategoryAttr);
       const shapes = getAllShapes(shop);
 
-      // Получаем все цвета из данных магазина или категории
       const originalColor = getOriginalFillForShop(shopId, firstCategory);
       const hoverColor = getHoverFillForShop(shopId, firstCategory);
       const filterColor = getFilterFillForShop(shopId, firstCategory);
       const highlightColor = getHighlightFillForShop(shopId, firstCategory);
+      const textColor = getTextColorForShop(shopId);
+      const textHoverColor = getTextHoverColorForShop(shopId);
 
-      // Сохраняем цвета в атрибуты группы для быстрого доступа
       shop.setAttribute("data-original-color", originalColor);
       shop.setAttribute("data-hover-color", hoverColor);
       shop.setAttribute("data-filter-color", filterColor);
       shop.setAttribute("data-highlight-color", highlightColor);
+      shop.setAttribute("data-text-color", textColor);
+      shop.setAttribute("data-text-hover-color", textHoverColor);
 
-      // Принудительно устанавливаем оригинальный цвет всем элементам
       shapes.forEach(shape => {
-        // Удаляем атрибут fill, чтобы он не мешал
         if (shape.hasAttribute("fill")) {
           shape.removeAttribute("fill");
         }
-        // Устанавливаем цвет через style
         shape.style.fill = originalColor;
         shape.setAttribute("data-original-fill", originalColor);
       });
 
-      console.log(
-        `✓ Цвета установлены для ${shopId}: original=${originalColor}, hover=${hoverColor}, filter=${filterColor}`,
-      );
+      // Устанавливаем цвет текста, если он уже существует
+      const textElement = document.querySelector(`.shop-label[data-shop-id="${shopId}"] text`);
+      if (textElement) {
+        textElement.style.fill = textColor;
+      }
     });
 
     console.log("Принудительная установка цветов завершена");
@@ -1833,6 +1851,12 @@ document.addEventListener("DOMContentLoaded", function () {
       shapes.forEach(shape => {
         shape.style.fill = originalColor || "#fcf2eb";
       });
+
+      const textElement = document.querySelector(`.shop-label[data-shop-id="${shop.id}"] text`);
+      if (textElement) {
+        const originalTextColor = shop.getAttribute("data-text-color");
+        textElement.style.fill = originalTextColor || "#164680";
+      }
     });
 
     if (!shopId) {
@@ -1872,13 +1896,11 @@ document.addEventListener("DOMContentLoaded", function () {
       popupCategory.className = `popup-category category-${data.category}`;
     }
 
-    // Обработка логотипа
     if (popupLogo) {
       if (data.logo && data.logo !== "") {
         popupLogo.src = data.logo;
         popupLogo.alt = data.name;
         popupLogo.style.display = "block";
-        // Показываем родительский контейнер логотипа
         const logoContainer = document.querySelector(".popup-logo");
         if (logoContainer) logoContainer.style.display = "flex";
       } else {
@@ -1915,7 +1937,6 @@ document.addEventListener("DOMContentLoaded", function () {
     allShops.forEach(shop => {
       const isStatic = isStaticElement(shop);
 
-      // Статичные элементы не меняются
       if (isStatic) {
         const shapes = getAllShapes(shop);
         shapes.forEach(shape => {
@@ -1930,18 +1951,15 @@ document.addEventListener("DOMContentLoaded", function () {
       const shopId = shop.id;
       const shopCategoryAttr = shop.getAttribute("data-category");
       const shapes = getAllShapes(shop);
-      const texts = shop.querySelectorAll("text");
       const isMatching = matchesCategory(shopCategoryAttr, category);
 
-      // Получаем цвета из атрибутов группы
       const originalColor = shop.getAttribute("data-original-color");
       const filterColor = shop.getAttribute("data-filter-color");
       const highlightColor = shop.getAttribute("data-highlight-color");
+      const textColor = shop.getAttribute("data-text-color");
 
-      // Получаем информацию о цвете текста из данных магазина
-      const shopInfo = shopData[shopId];
-      const textColor = shopInfo?.textColor || "#164680";
-      const textBgColor = shopInfo?.textBgColor || null;
+      // Находим текст в отдельном слое
+      const textElement = document.querySelector(`.shop-label[data-shop-id="${shopId}"] text`);
 
       if (category === "all") {
         shapes.forEach(shape => {
@@ -1951,32 +1969,32 @@ document.addEventListener("DOMContentLoaded", function () {
             shape.style.fill = originalColor;
           }
         });
-        texts.forEach(text => {
-          text.style.opacity = "1";
-          text.style.fill = textColor; // Применяем цвет текста
-          text.style.visibility = "visible";
-        });
+        if (textElement) {
+          textElement.style.opacity = "1";
+          textElement.style.fill = textColor;
+          textElement.style.visibility = "visible";
+        }
         shop.style.opacity = "1";
         shop.style.filter = "none";
       } else if (isMatching) {
         shapes.forEach(shape => {
           shape.style.fill = filterColor;
         });
-        texts.forEach(text => {
-          text.style.opacity = "1";
-          text.style.fill = textColor; // Применяем цвет текста
-          text.style.visibility = "visible";
-        });
+        if (textElement) {
+          textElement.style.opacity = "1";
+          textElement.style.fill = textColor;
+          textElement.style.visibility = "visible";
+        }
         shop.style.opacity = "1";
         shop.style.filter = "drop-shadow(0 0 3px rgba(0,0,0,0.2))";
       } else {
         shapes.forEach(shape => {
           shape.style.fill = originalColor;
         });
-        texts.forEach(text => {
-          text.style.opacity = "0.4";
-          text.style.fill = textColor; // Сохраняем цвет текста, но делаем полупрозрачным
-        });
+        if (textElement) {
+          textElement.style.opacity = "0.4";
+          textElement.style.fill = textColor;
+        }
         shop.style.opacity = "0.3";
         shop.style.filter = "grayscale(0.7) brightness(0.6)";
       }
@@ -2018,8 +2036,7 @@ document.addEventListener("DOMContentLoaded", function () {
       const shopName = shopInfo.name;
       const shopNameSize = shopInfo.namesize || 12;
 
-      // Получаем цвет текста из данных магазина или используем стандартный
-      const textColor = shopInfo.textColor || "#164680";
+      const textColor = getTextColorForShop(shopId);
       const textBgColor = shopInfo.textBgColor || null;
       const textBgOpacity = shopInfo.textBgOpacity !== undefined ? shopInfo.textBgOpacity : 0.92;
 
@@ -2092,7 +2109,6 @@ document.addEventListener("DOMContentLoaded", function () {
       const centerX = (minX + maxX) / 2;
       let centerY = (minY + maxY) / 2;
 
-      // Если задано смещение текста
       if (shopInfo.textOffsetY) {
         centerY += shopInfo.textOffsetY;
       }
@@ -2104,7 +2120,6 @@ document.addEventListener("DOMContentLoaded", function () {
       const textWidth = shopName.length * (shopNameSize * 0.6);
       const textHeight = shopNameSize;
 
-      // Создаем фон для текста (если указан цвет фона)
       if (textBgColor) {
         const bgRect = document.createElementNS("http://www.w3.org/2000/svg", "rect");
         bgRect.setAttribute("x", centerX - textWidth / 2 - 8);
@@ -2120,7 +2135,6 @@ document.addEventListener("DOMContentLoaded", function () {
         bgRect.setAttribute("stroke-opacity", "0.3");
         textGroup.appendChild(bgRect);
       } else {
-        // Стандартный фон
         const bgRect = document.createElementNS("http://www.w3.org/2000/svg", "rect");
         bgRect.setAttribute("x", centerX - textWidth / 2 - 8);
         bgRect.setAttribute("y", centerY - textHeight / 2 - 4);
@@ -2136,7 +2150,6 @@ document.addEventListener("DOMContentLoaded", function () {
         textGroup.appendChild(bgRect);
       }
 
-      // Создаём сам текст
       const text = document.createElementNS("http://www.w3.org/2000/svg", "text");
       text.setAttribute("x", centerX);
       text.setAttribute("y", centerY);
@@ -2149,14 +2162,8 @@ document.addEventListener("DOMContentLoaded", function () {
       text.setAttribute("pointer-events", "none");
       text.textContent = shopName;
 
-      // Добавляем текст в группу
       textGroup.appendChild(text);
       labelsLayer.appendChild(textGroup);
-
-      // Для отладки
-      if (shopInfo.textColor) {
-        console.log(`Для ${shopId} установлен цвет текста: ${textColor}`);
-      }
     });
   }
 
@@ -2238,7 +2245,7 @@ document.addEventListener("DOMContentLoaded", function () {
     if (!panZoomInstance) return;
     const zoom = panZoomInstance.getZoom();
 
-    document.querySelectorAll("#map-container svg g[id] text").forEach(text => {
+    document.querySelectorAll("#map-container svg .shop-label text").forEach(text => {
       if (zoom >= 0.8) {
         text.style.opacity = "1";
         text.style.visibility = "visible";
@@ -2305,21 +2312,30 @@ document.addEventListener("DOMContentLoaded", function () {
         }
       });
 
-      // Обработчик mouseenter - используем цвет из атрибута группы
+      // Обработчик mouseenter - меняем цвет заливки и цвет текста
       shop.addEventListener("mouseenter", () => {
         const shopCategoryAttr = shop.getAttribute("data-category");
         const isInactive = currentFilter !== "all" && !matchesCategory(shopCategoryAttr, currentFilter);
         if (isInactive) return;
 
+        // Меняем цвет заливки фигур
         const shapes = getAllShapes(shop);
         const hoverColor = shop.getAttribute("data-hover-color");
-
         shapes.forEach(shape => {
           shape.style.fill = hoverColor;
         });
+
+        // Меняем цвет текста в отдельном слое
+        const textElement = document.querySelector(`.shop-label[data-shop-id="${shopId}"] text`);
+        if (textElement) {
+          const hoverTextColor = shop.getAttribute("data-text-hover-color");
+          if (hoverTextColor) {
+            textElement.style.fill = hoverTextColor;
+          }
+        }
       });
 
-      // Обработчик mouseleave - восстанавливаем цвет из атрибута группы
+      // Обработчик mouseleave - восстанавливаем цвета
       shop.addEventListener("mouseleave", () => {
         const shopCategoryAttr = shop.getAttribute("data-category");
         const shapes = getAllShapes(shop);
@@ -2328,6 +2344,7 @@ document.addEventListener("DOMContentLoaded", function () {
         const filterColor = shop.getAttribute("data-filter-color");
         const highlightColor = shop.getAttribute("data-highlight-color");
 
+        // Восстанавливаем цвет заливки
         if (isInactive) {
           shapes.forEach(shape => {
             shape.style.fill = originalColor;
@@ -2349,6 +2366,15 @@ document.addEventListener("DOMContentLoaded", function () {
             });
           }
           shop.style.filter = "none";
+        }
+
+        // Восстанавливаем цвет текста в отдельном слое
+        const textElement = document.querySelector(`.shop-label[data-shop-id="${shopId}"] text`);
+        if (textElement) {
+          const originalTextColor = shop.getAttribute("data-text-color");
+          if (originalTextColor) {
+            textElement.style.fill = originalTextColor;
+          }
         }
       });
     });
@@ -2378,9 +2404,9 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
     saveOriginalColors();
-    forceSetOriginalColors(); // ПРИНУДИТЕЛЬНАЯ УСТАНОВКА ЦВЕТОВ
+    addSVGLabels(); // СНАЧАЛА создаём текст
+    forceSetOriginalColors(); // ПОТОМ устанавливаем цвета
     initPanZoom();
-    addSVGLabels();
     attachShopEventHandlers();
     initFilters();
     disableStaticHover();
