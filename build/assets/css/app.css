@@ -3995,6 +3995,12 @@ table.clear td {
   object-fit: contain;
   border-radius: 8px;
 }
+.map-container_inPage svg {
+  min-height: 336px !important;
+}
+.map26inPage {
+  margin-bottom: 20px;
+}
 :root {
   /* Светлая тема */
   --bg-primary: #f8f9fa;

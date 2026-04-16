@@ -3368,7 +3368,7 @@ window.addEventListener("popstate", function () {
 
 // ========== УНИВЕРСАЛЬНОЕ ЦЕНТРИРОВАНИЕ ПО БЛОКУ #current-shop ==========
 (function () {
-  function centerMapOnShop(shopId, zoomLevel) {
+  function centerMapOnShop(shopId, zoomLevel, offsetY = 0) {
     if (!window.panZoomInstance) {
       console.warn("PanZoom не инициализирован");
       return false;
@@ -3384,29 +3384,12 @@ window.addEventListener("popstate", function () {
     var shopRect = shop.getBoundingClientRect();
     var svgRect = document.querySelector("#map-container svg").getBoundingClientRect();
 
-    // Вычисляем центр элемента относительно SVG
+    // Вычисляем центр элемента относительно SVG с учётом сдвига по Y
     var centerX = shopRect.left + shopRect.width / 2 - svgRect.left;
-    var centerY = shopRect.top + shopRect.height / 2 - svgRect.top;
+    var centerY = shopRect.top + shopRect.height / 2 - svgRect.top + offsetY;
 
     console.log("Центр элемента (отладка):", centerX, centerY);
-
-    // ========== ОТЛАДКА: Рисуем красный кружок в центре ==========
-    // Удаляем старый кружок, если есть
-    // var oldDebug = document.getElementById("debug-center-circle");
-    // if (oldDebug) oldDebug.remove();
-
-    // var debugCircle = document.createElementNS("http://www.w3.org/2000/svg", "circle");
-    // debugCircle.setAttribute("id", "debug-center-circle");
-    // debugCircle.setAttribute("cx", centerX);
-    // debugCircle.setAttribute("cy", centerY);
-    // debugCircle.setAttribute("r", "15");
-    // debugCircle.setAttribute("fill", "red");
-    // debugCircle.setAttribute("fill-opacity", "0.7");
-    // debugCircle.setAttribute("stroke", "yellow");
-    // debugCircle.setAttribute("stroke-width", "3");
-    // document.querySelector("#map-container svg").appendChild(debugCircle);
-    // console.log("Красный кружок добавлен в центр элемента");
-    // ============================================================
+    console.log("Сдвиг по Y:", offsetY);
 
     // Сбрасываем и устанавливаем зум
     window.panZoomInstance.reset();
@@ -3445,13 +3428,13 @@ window.addEventListener("popstate", function () {
     if (!shopId) return;
     var finalZoom = !isNaN(zoom) && zoom > 0 ? zoom : 2.0;
 
-    console.log("Центрирование по #current-shop: " + shopId + ", zoom=" + finalZoom);
+    console.log("Центрирование по #current-shop: " + shopId + ", zoom=" + finalZoom + ", offsetY=" + offsetY);
 
     var checkInterval = setInterval(function () {
       if (window.panZoomInstance && document.getElementById(shopId)) {
         clearInterval(checkInterval);
         setTimeout(function () {
-          centerMapOnShop(shopId, finalZoom);
+          centerMapOnShop(shopId, finalZoom, offsetY);
         }, 300);
       }
     }, 200);

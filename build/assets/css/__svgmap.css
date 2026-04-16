@@ -178,5 +178,11 @@
   object-fit: contain;
   border-radius: 8px;
 }
+.map-container_inPage svg {
+  min-height: 336px !important;
+}
+.map26inPage {
+  margin-bottom: 20px;
+}
 /*# sourceMappingURL=__svgmap.css.map */
 /*# sourceMappingURL=__svgmap.css.map */
