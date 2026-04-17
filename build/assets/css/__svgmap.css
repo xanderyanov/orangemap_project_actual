@@ -182,7 +182,16 @@
   min-height: 336px !important;
 }
 .map26inPage {
-  margin-bottom: 20px;
+  margin: 20px 0;
+}
+/* Скрываем карту до полной загрузки */
+#map-container {
+  opacity: 0;
+  transition: opacity 0.3s ease-in-out;
+}
+/* Карта показывается только после центрирования */
+#map-container.map-visible {
+  opacity: 1;
 }
 /*# sourceMappingURL=__svgmap.css.map */
 /*# sourceMappingURL=__svgmap.css.map */

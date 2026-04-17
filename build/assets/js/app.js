@@ -3368,7 +3368,14 @@ window.addEventListener("popstate", function () {
 
 // ========== УНИВЕРСАЛЬНОЕ ЦЕНТРИРОВАНИЕ ПО БЛОКУ #current-shop ==========
 (function () {
-  function centerMapOnShop(shopId, zoomLevel, offsetY = 0) {
+  // Скрываем карту сразу
+  var mapContainer = document.getElementById("map-container");
+  if (mapContainer) {
+    mapContainer.style.opacity = "0";
+    mapContainer.style.transition = "opacity 0.3s ease";
+  }
+
+  function centerMapOnShop(shopId, zoomLevel) {
     if (!window.panZoomInstance) {
       console.warn("PanZoom не инициализирован");
       return false;
@@ -3384,12 +3391,11 @@ window.addEventListener("popstate", function () {
     var shopRect = shop.getBoundingClientRect();
     var svgRect = document.querySelector("#map-container svg").getBoundingClientRect();
 
-    // Вычисляем центр элемента относительно SVG с учётом сдвига по Y
+    // Вычисляем центр элемента относительно SVG
     var centerX = shopRect.left + shopRect.width / 2 - svgRect.left;
-    var centerY = shopRect.top + shopRect.height / 2 - svgRect.top + offsetY;
+    var centerY = shopRect.top + shopRect.height / 2 - svgRect.top;
 
     console.log("Центр элемента (отладка):", centerX, centerY);
-    console.log("Сдвиг по Y:", offsetY);
 
     // Сбрасываем и устанавливаем зум
     window.panZoomInstance.reset();
@@ -3408,6 +3414,13 @@ window.addEventListener("popstate", function () {
         x: panX,
         y: panY,
       });
+
+      // ПОКАЗЫВАЕМ КАРТУ ПОСЛЕ ЦЕНТРИРОВАНИЯ
+      if (mapContainer) {
+        setTimeout(function () {
+          mapContainer.style.opacity = "1";
+        }, 50);
+      }
     }, 100);
 
     if (typeof window.highlightShop === "function") {
@@ -3419,27 +3432,44 @@ window.addEventListener("popstate", function () {
 
   setTimeout(function () {
     var block = document.getElementById("current-shop");
-    if (!block) return;
+    if (!block) {
+      // Если нет блока current-shop - показываем карту сразу
+      if (mapContainer) {
+        mapContainer.style.opacity = "1";
+      }
+      return;
+    }
 
     var shopId = block.getAttribute("data-shop-id");
     var zoom = parseFloat(block.getAttribute("data-zoom"));
-    var offsetY = parseFloat(block.getAttribute("data-offset-y")) || 0;
 
-    if (!shopId) return;
+    if (!shopId) {
+      if (mapContainer) mapContainer.style.opacity = "1";
+      return;
+    }
+
     var finalZoom = !isNaN(zoom) && zoom > 0 ? zoom : 2.0;
 
-    console.log("Центрирование по #current-shop: " + shopId + ", zoom=" + finalZoom + ", offsetY=" + offsetY);
+    console.log("Центрирование по #current-shop: " + shopId + ", zoom=" + finalZoom);
 
     var checkInterval = setInterval(function () {
       if (window.panZoomInstance && document.getElementById(shopId)) {
         clearInterval(checkInterval);
         setTimeout(function () {
-          centerMapOnShop(shopId, finalZoom, offsetY);
+          centerMapOnShop(shopId, finalZoom);
         }, 300);
       }
     }, 200);
   }, 500);
 })();
+
+// Показываем карту, если нет current-shop или после центрирования
+setTimeout(function () {
+  var container = document.getElementById("map-container");
+  if (container && container.style.opacity !== "1") {
+    container.style.opacity = "1";
+  }
+}, 2000); // Запасной вариант - показать через 2 секунды в любом случае
 
 // Функция, которая выполнится после полной загрузки страницы
 function onPageLoad(callback) {
