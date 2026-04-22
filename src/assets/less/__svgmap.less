@@ -59,16 +59,35 @@
 #map-container {
   position: relative;
   width: 100%;
+  height: clamp(420px, 70vh, 900px);
   border: 2px solid #e27f21;
   border-radius: 10px;
   overflow: hidden;
+  opacity: 0;
+  transition: opacity 0.3s ease-in-out;
+  background: #fafafa;
+
+  &.map-visible {
+    opacity: 1;
+  }
 
   svg {
-    width: 100%;
-    // height: auto;
     display: block;
+    width: 100%;
+    height: 100%;
     background: #fafafa;
   }
+}
+
+// ============================================================
+// ПОДПИСИ НА КАРТЕ
+// ============================================================
+#map-container svg .shop-label {
+  pointer-events: none;
+}
+
+#map-container svg .shop-label rect {
+  pointer-events: none;
 }
 
 // ============================================================
@@ -135,7 +154,6 @@
   font-weight: 500;
   font-family: "Ubuntu", sans-serif;
   margin-bottom: 15px;
-
   background: #fff3e0;
   color: #ff9800;
 }
@@ -172,139 +190,6 @@
   }
 }
 
-// ============================================================
-// АНИМАЦИИ
-// ============================================================
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-    transform: scale(0.9);
-  }
-  to {
-    opacity: 1;
-    transform: scale(1);
-  }
-}
-
-// ============================================================
-// КНОПКИ ZOOM (svg-pan-zoom)
-// ============================================================
-// .svg-pan-zoom_controls {
-//   bottom: 20px;
-//   right: 20px;
-//   background: #ffffff;
-//   border-radius: 8px;
-//   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-//   overflow: hidden;
-// }
-
-// .svg-pan-zoom_control {
-//   width: 40px;
-//   height: 40px;
-//   background: #164680;
-//   color: #ffffff;
-//   font-size: 24px;
-//   font-weight: bold;
-//   border: none;
-//   cursor: pointer;
-
-//   &:hover {
-//     background: #0e2e57;
-//   }
-// }
-
-// // Улучшение тач-области на мобильных
-// @media (max-width: 768px) {
-//   .svg-pan-zoom_control {
-//     width: 48px !important;
-//     height: 48px !important;
-//     font-size: 28px !important;
-//   }
-// }
-
-/* Изменение текста на кнопках */
-// .svg-pan-zoom-zoom-in .svg-pan-zoom-control-element {
-//   /* Например, чтобы изменить текст кнопки "+", можно использовать псевдоэлемент,
-//        но надёжнее скрыть стандартный текст и добавить свой */
-// }
-
-// /* Более простой способ — скрыть стандартные иконки и задать фон с нужным текстом */
-// .svg-pan-zoom-zoom-in .svg-pan-zoom-control-background {
-//   display: none;
-// }
-
-// .svg-pan-zoom-zoom-in .svg-pan-zoom-control-element {
-//   fill: none;
-// }
-
-// .svg-pan-zoom-zoom-in {
-//   background: #164680;
-//   color: white;
-//   font-size: 24px;
-//   font-weight: bold;
-//   text-align: center;
-//   line-height: 40px;
-// }
-
-// /* Аналогично для других кнопок */
-// .svg-pan-zoom-zoom-out {
-//   background: #164680;
-//   color: white;
-// }
-// .svg-pan-zoom-reset-pan-zoom {
-//   background: #164680;
-//   color: white;
-// }
-
-// /* Скрываем текст внутри viewport элемента */
-// .svg-pan-zoom_viewport {
-//   /* Убираем возможные текстовые узлы */
-//   font-size: 0;
-//   line-height: 0;
-// }
-
-// /* Если текст появляется как содержимое псевдоэлемента */
-// .svg-pan-zoom_viewport::before,
-// .svg-pan-zoom_viewport::after {
-//   display: none !important;
-//   content: none !important;
-// }
-
-// /* Скрываем любые текстовые узлы внутри viewport */
-// .svg-pan-zoom_viewport * {
-//   font-size: 0;
-// }
-
-// /* Если ID динамический, скрываем по атрибуту id, начинающемуся с viewport- */
-// [id^="viewport-"] {
-//   font-size: 0;
-//   line-height: 0;
-// }
-
-// [id^="viewport-"]::before,
-// [id^="viewport-"]::after {
-//   display: none !important;
-// }
-
-#map-container svg {
-  width: 100% !important;
-  height: auto !important;
-  min-height: 500px;
-}
-
-#map-container .svg-pan-zoom_viewport {
-  height: auto !important;
-  min-height: 500px;
-}
-
-#map-container svg .shop-label {
-  pointer-events: none;
-}
-
-#map-container svg .shop-label rect {
-  pointer-events: none;
-}
-
 .popup-logo {
   display: flex;
   justify-content: center;
@@ -319,6 +204,24 @@
   border-radius: 8px;
 }
 
+// ============================================================
+// АНИМАЦИИ
+// ============================================================
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+// ============================================================
+// ДОПОЛНИТЕЛЬНЫЕ КЛАССЫ
+// ============================================================
 .map-container_inPage svg {
   min-height: 336px !important;
 }
@@ -327,13 +230,36 @@
   margin: 20px 0;
 }
 
-/* Скрываем карту до полной загрузки */
-#map-container {
-  opacity: 0;
-  transition: opacity 0.3s ease-in-out;
-}
+// ============================================================
+// МОБИЛЬНАЯ АДАПТАЦИЯ
+// ============================================================
+@media (max-width: 768px) {
+  .filters {
+    gap: 10px;
+    margin-bottom: 20px;
 
-/* Карта показывается только после центрирования */
-#map-container.map-visible {
-  opacity: 1;
+    .filter-btn {
+      padding: 9px 16px;
+      font-size: 13px;
+    }
+  }
+
+  #map-container {
+    height: 65vh;
+    min-height: 360px;
+    max-height: 700px;
+  }
+
+  .popup-content {
+    padding: 24px 18px;
+    width: calc(100% - 24px);
+  }
+
+  .popup-title {
+    font-size: 20px;
+  }
+
+  .popup-desc {
+    font-size: 14px;
+  }
 }

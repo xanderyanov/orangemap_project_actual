@@ -1,136 +1,110 @@
 // main.js
 document.addEventListener("DOMContentLoaded", function () {
-  console.log("скрипт карты загружен");
-  // ========== ПРОВЕРКА, ЧТО shopData И categoryStyle ЗАГРУЖЕНЫ ==========
   if (typeof shopData === "undefined") {
     console.error("shopData не загружен! Подключите shop-data.js перед этим файлом.");
     return;
   }
+
   if (typeof categoryStyle === "undefined") {
     console.error("categoryStyle не загружен! Подключите category-styles.js перед этим файлом.");
     return;
   }
 
-  // ========== НАХОДИМ ЭЛЕМЕНТЫ ==========
+  const mapContainer = document.getElementById("map-container");
   const svgElement = document.querySelector("#map-container svg");
-  if (!svgElement) {
-    console.error("SVG элемент не найден!");
+
+  if (!mapContainer || !svgElement) {
+    console.error("map-container или SVG элемент не найден.");
     return;
   }
 
-  // ========== ИНИЦИАЛИЗАЦИЯ PANZOOM ==========
-  let panZoomInstance = null;
-  window.panZoomInstance = null;
+  const viewportElement =
+    svgElement.querySelector("#map-viewport") || svgElement.querySelector(".svg-pan-zoom_viewport");
 
-  function initPanZoom() {
-    setTimeout(function () {
-      try {
-        if (typeof svgPanZoom !== "undefined") {
-          panZoomInstance = svgPanZoom(svgElement, {
-            zoomEnabled: true,
-            controlIconsEnabled: true,
-            fit: true,
-            center: true,
-            minZoom: 0.3,
-            maxZoom: 10,
-            zoomScaleSensitivity: 0.2,
-          });
-          window.panZoomInstance = panZoomInstance;
-          console.log("PanZoom инициализирован");
-        } else {
-          console.warn("svgPanZoom не найден, повторная попытка...");
-          setTimeout(initPanZoom, 100);
-        }
-      } catch (e) {
-        console.error("Ошибка:", e);
-      }
-    }, 100);
+  if (!viewportElement) {
+    console.error("Не найден #map-viewport / .svg-pan-zoom_viewport внутри SVG.");
+    return;
   }
 
-  // ========== НАХОДИМ ВСЕ МАГАЗИНЫ ==========
-  const allShops = svgElement.querySelectorAll("g[id]");
-  console.log(`Найдено магазинов: ${allShops.length}`);
-
-  // ========== ПЕРЕМЕННЫЕ ДЛЯ ОБРАБОТКИ СОБЫТИЙ ==========
+  let panZoomInstance = null;
+  let resizeTimer = null;
   let touchTimer = null;
   let isPanning = false;
   let currentFilter = "all";
   let highlightedShopId = null;
 
-  // ========== ВСПОМОГАТЕЛЬНЫЕ ФУНКЦИИ ==========
+  window.panZoomInstance = null;
 
-  // Проверяет, является ли элемент статичным
+  const allShops = Array.from(viewportElement.children).filter(el => {
+    return el.tagName && el.tagName.toLowerCase() === "g" && el.id && el.hasAttribute("data-category");
+  });
+
+  function showMap() {
+    mapContainer.classList.add("map-visible");
+  }
+
+  function hideMap() {
+    mapContainer.classList.remove("map-visible");
+  }
+
+  hideMap();
+
   function isStaticElement(shop) {
     const categoryAttr = shop.getAttribute("data-category");
     return !categoryAttr || categoryAttr === "static";
   }
 
-  // Проверяет, соответствует ли shop выбранной категории
   function matchesCategory(shopCategoryAttr, selectedCategory) {
     if (selectedCategory === "all") return true;
     if (!shopCategoryAttr) return false;
 
-    const categories = shopCategoryAttr.split(",").map(cat => cat.trim());
+    const categories = shopCategoryAttr
+      .split(",")
+      .map(cat => cat.trim())
+      .filter(Boolean);
+
     return categories.includes(selectedCategory);
   }
 
-  // Получает первую категорию из атрибута
   function getFirstCategory(shopCategoryAttr) {
     if (!shopCategoryAttr) return null;
-    return shopCategoryAttr.split(",")[0].trim();
+    const first = shopCategoryAttr.split(",")[0];
+    return first ? first.trim() : null;
   }
 
-  // Получает оригинальный цвет для магазина
   function getOriginalFillForShop(shopId, category) {
     const shopInfo = shopData[shopId];
-    if (shopInfo && shopInfo.originalFill) {
-      return shopInfo.originalFill;
-    }
+    if (shopInfo && shopInfo.originalFill) return shopInfo.originalFill;
     return categoryStyle[category]?.originalFill || "#fcf2eb";
   }
 
-  // Получает цвет при наведении для магазина
   function getHoverFillForShop(shopId, category) {
     const shopInfo = shopData[shopId];
-    if (shopInfo && shopInfo.hoverFill && shopInfo.hoverFill !== "") {
-      return shopInfo.hoverFill;
-    }
+    if (shopInfo && shopInfo.hoverFill) return shopInfo.hoverFill;
     return categoryStyle[category]?.hoverFill || "#f5f5f5";
   }
 
-  // Получает цвет при фильтрации для магазина
   function getFilterFillForShop(shopId, category) {
     const shopInfo = shopData[shopId];
-    if (shopInfo && shopInfo.filterFill && shopInfo.filterFill !== "") {
-      return shopInfo.filterFill;
-    }
+    if (shopInfo && shopInfo.filterFill) return shopInfo.filterFill;
     return categoryStyle[category]?.filterFill || "#f5f5f5";
   }
 
-  // Получает цвет подсветки для магазина
   function getHighlightFillForShop(shopId, category) {
     const shopInfo = shopData[shopId];
-    if (shopInfo && shopInfo.highlightFill) {
-      return shopInfo.highlightFill;
-    }
+    if (shopInfo && shopInfo.highlightFill) return shopInfo.highlightFill;
     return categoryStyle[category]?.highlightFill || "#ffe0b2";
   }
 
-  // Получает обычный цвет текста для магазина
   function getTextColorForShop(shopId) {
     const shopInfo = shopData[shopId];
-    if (shopInfo && shopInfo.textColor) {
-      return shopInfo.textColor;
-    }
+    if (shopInfo && shopInfo.textColor) return shopInfo.textColor;
     return "#164680";
   }
 
-  // Получает цвет текста при наведении для магазина
   function getTextHoverColorForShop(shopId) {
     const shopInfo = shopData[shopId];
-    if (shopInfo && shopInfo.textHoverColor) {
-      return shopInfo.textHoverColor;
-    }
+    if (shopInfo && shopInfo.textHoverColor) return shopInfo.textHoverColor;
     return "#ff6600";
   }
 
@@ -146,12 +120,87 @@ document.addEventListener("DOMContentLoaded", function () {
     return texts[category] || category;
   }
 
-  // Получает все графические элементы в магазине
   function getAllShapes(shop) {
-    return shop.querySelectorAll("path:not(.text-label), circle, rect, ellipse, polygon, line");
+    return shop.querySelectorAll("path, circle, rect, ellipse, polygon, line, polyline");
   }
 
-  // ========== СОХРАНЕНИЕ ОРИГИНАЛЬНЫХ ЦВЕТОВ ==========
+  function isMobileViewport() {
+    return window.matchMedia("(max-width: 767px)").matches;
+  }
+
+  function getCurrentShopConfig() {
+    const block = document.getElementById("current-shop");
+    if (!block) return null;
+
+    const shopId = block.getAttribute("data-shop-id");
+    if (!shopId) return null;
+
+    const zoomAttr = parseFloat(block.getAttribute("data-zoom"));
+    const offsetDesktop = parseFloat(block.getAttribute("data-offset-y"));
+    const offsetMobile = parseFloat(block.getAttribute("data-offset-y-mobile"));
+
+    const zoom = !isNaN(zoomAttr) && zoomAttr > 0 ? zoomAttr : 2;
+
+    let offsetY = 0;
+    if (isMobileViewport() && !isNaN(offsetMobile)) {
+      offsetY = offsetMobile;
+    } else if (!isNaN(offsetDesktop)) {
+      offsetY = offsetDesktop;
+    }
+
+    return { shopId, zoom, offsetY };
+  }
+
+  function getShopBounds(shop) {
+    const shapes = getAllShapes(shop);
+    if (!shapes.length) return null;
+
+    let minX = Infinity;
+    let minY = Infinity;
+    let maxX = -Infinity;
+    let maxY = -Infinity;
+
+    shapes.forEach(shape => {
+      try {
+        const bbox = shape.getBBox();
+        if (!bbox || (bbox.width === 0 && bbox.height === 0 && bbox.x === 0 && bbox.y === 0)) {
+          return;
+        }
+
+        minX = Math.min(minX, bbox.x);
+        minY = Math.min(minY, bbox.y);
+        maxX = Math.max(maxX, bbox.x + bbox.width);
+        maxY = Math.max(maxY, bbox.y + bbox.height);
+      } catch (e) {}
+    });
+
+    if (minX === Infinity) return null;
+
+    return {
+      minX,
+      minY,
+      maxX,
+      maxY,
+      centerX: (minX + maxX) / 2,
+      centerY: (minY + maxY) / 2,
+    };
+  }
+
+  function getScreenPointFromViewportCoords(x, y) {
+    try {
+      const point = svgElement.createSVGPoint();
+      point.x = x;
+      point.y = y;
+
+      const ctm = viewportElement.getScreenCTM();
+      if (!ctm) return null;
+
+      return point.matrixTransform(ctm);
+    } catch (e) {
+      return null;
+    }
+  }
+
   function saveOriginalColors() {
     allShops.forEach(shop => {
       const shopId = shop.id;
@@ -159,7 +208,6 @@ document.addEventListener("DOMContentLoaded", function () {
       const shapes = getAllShapes(shop);
       const isStatic = isStaticElement(shop);
       const firstCategory = getFirstCategory(shopCategoryAttr);
-
       const originalFillColor = getOriginalFillForShop(shopId, firstCategory);
 
       shapes.forEach(shape => {
@@ -172,6 +220,7 @@ document.addEventListener("DOMContentLoaded", function () {
         }
 
         shape.setAttribute("data-original-fill", originalFill);
+
         if (!isStatic) {
           shape.style.fill = originalFill;
         }
@@ -179,14 +228,10 @@ document.addEventListener("DOMContentLoaded", function () {
     });
   }
 
-  // ========== ПРИНУДИТЕЛЬНАЯ УСТАНОВКА ЦВЕТОВ ==========
   function forceSetOriginalColors() {
-    console.log("Принудительная установка цветов для магазинов...");
-
     allShops.forEach(shop => {
       const shopId = shop.id;
       const shopInfo = shopData[shopId];
-
       if (isStaticElement(shop) || !shopInfo) return;
 
       const shopCategoryAttr = shop.getAttribute("data-category");
@@ -215,23 +260,20 @@ document.addEventListener("DOMContentLoaded", function () {
         shape.setAttribute("data-original-fill", originalColor);
       });
 
-      // Устанавливаем цвет текста, если он уже существует
       const textElement = document.querySelector(`.shop-label[data-shop-id="${shopId}"] text`);
       if (textElement) {
         textElement.style.fill = textColor;
       }
     });
-
-    console.log("Принудительная установка цветов завершена");
   }
 
-  // ========== ПОДСВЕТКА КОНКРЕТНОГО МАГАЗИНА ==========
   function highlightShop(shopId) {
     allShops.forEach(shop => {
       if (isStaticElement(shop)) return;
 
       const shapes = getAllShapes(shop);
       const originalColor = shop.getAttribute("data-original-color");
+
       shapes.forEach(shape => {
         shape.style.fill = originalColor || "#fcf2eb";
       });
@@ -263,7 +305,6 @@ document.addEventListener("DOMContentLoaded", function () {
 
   window.highlightShop = highlightShop;
 
-  // ========== ФУНКЦИЯ ПОКАЗА ПОПАПА ==========
   function showPopup(shopId) {
     const data = shopData[shopId];
     if (!data) return;
@@ -275,25 +316,26 @@ document.addEventListener("DOMContentLoaded", function () {
     const popupLink = document.getElementById("popup-link");
     const popupLogo = document.querySelector(".popup-logo img");
 
-    if (popupTitle) popupTitle.textContent = data.name;
-    if (popupDesc) popupDesc.textContent = data.desc;
+    if (popupTitle) popupTitle.textContent = data.name || "";
+    if (popupDesc) popupDesc.textContent = data.desc || "";
+
     if (popupCategory) {
       popupCategory.textContent = getCategoryText(data.category);
       popupCategory.className = `popup-category category-${data.category}`;
     }
 
     if (popupLogo) {
-      if (data.logo && data.logo !== "") {
+      const logoContainer = document.querySelector(".popup-logo");
+
+      if (data.logo) {
         popupLogo.src = data.logo;
-        popupLogo.alt = data.name;
+        popupLogo.alt = data.name || "";
         popupLogo.style.display = "block";
-        const logoContainer = document.querySelector(".popup-logo");
         if (logoContainer) logoContainer.style.display = "flex";
       } else {
         popupLogo.src = "";
         popupLogo.alt = "";
         popupLogo.style.display = "none";
-        const logoContainer = document.querySelector(".popup-logo");
         if (logoContainer) logoContainer.style.display = "none";
       }
     }
@@ -310,13 +352,11 @@ document.addEventListener("DOMContentLoaded", function () {
     if (popup) popup.style.display = "flex";
   }
 
-  // ========== ЗАКРЫТИЕ ПОПАПА ==========
   function closePopup() {
     const popup = document.getElementById("shop-popup");
     if (popup) popup.style.display = "none";
   }
 
-  // ========== ПРИМЕНЕНИЕ ФИЛЬТРА ==========
   function applyFilter(category) {
     currentFilter = category;
 
@@ -343,53 +383,54 @@ document.addEventListener("DOMContentLoaded", function () {
       const filterColor = shop.getAttribute("data-filter-color");
       const highlightColor = shop.getAttribute("data-highlight-color");
       const textColor = shop.getAttribute("data-text-color");
-
-      // Находим текст в отдельном слое
       const textElement = document.querySelector(`.shop-label[data-shop-id="${shopId}"] text`);
 
       if (category === "all") {
         shapes.forEach(shape => {
-          if (shop.id === highlightedShopId) {
-            shape.style.fill = highlightColor;
-          } else {
-            shape.style.fill = originalColor;
-          }
+          shape.style.fill = shop.id === highlightedShopId ? highlightColor : originalColor;
         });
+
         if (textElement) {
           textElement.style.opacity = "1";
           textElement.style.fill = textColor;
           textElement.style.visibility = "visible";
         }
+
         shop.style.opacity = "1";
         shop.style.filter = "none";
       } else if (isMatching) {
         shapes.forEach(shape => {
           shape.style.fill = filterColor;
         });
+
         if (textElement) {
           textElement.style.opacity = "1";
           textElement.style.fill = textColor;
           textElement.style.visibility = "visible";
         }
+
         shop.style.opacity = "1";
         shop.style.filter = "drop-shadow(0 0 3px rgba(0,0,0,0.2))";
       } else {
         shapes.forEach(shape => {
           shape.style.fill = originalColor;
         });
+
         if (textElement) {
           textElement.style.opacity = "0.4";
           textElement.style.fill = textColor;
+          textElement.style.visibility = "visible";
         }
+
         shop.style.opacity = "0.3";
         shop.style.filter = "grayscale(0.7) brightness(0.6)";
       }
     });
   }
 
-  // ========== ОТКЛЮЧЕНИЕ HOVER ДЛЯ СТАТИЧНЫХ ЭЛЕМЕНТОВ ==========
   function disableStaticHover() {
-    const staticElements = svgElement.querySelectorAll('g:not([data-category]), g[data-category="static"]');
+    const staticElements = allShops.filter(shop => isStaticElement(shop));
+
     staticElements.forEach(staticElement => {
       staticElement.classList.add("no-hover");
       staticElement.style.pointerEvents = "none";
@@ -399,17 +440,16 @@ document.addEventListener("DOMContentLoaded", function () {
         child.style.pointerEvents = "none";
       });
     });
-    console.log(`Отключено наведение для ${staticElements.length} статичных элементов`);
   }
 
-  // ========== ДОБАВЛЕНИЕ НАЗВАНИЙ ВНУТРИ SVG ==========
   function addSVGLabels() {
-    let labelsLayer = document.getElementById("shop-labels-layer");
+    let labelsLayer = viewportElement.querySelector("#shop-labels-layer");
+
     if (!labelsLayer) {
       labelsLayer = document.createElementNS("http://www.w3.org/2000/svg", "g");
       labelsLayer.setAttribute("id", "shop-labels-layer");
       labelsLayer.setAttribute("style", "pointer-events: none;");
-      svgElement.appendChild(labelsLayer);
+      viewportElement.appendChild(labelsLayer);
     }
 
     allShops.forEach(shop => {
@@ -421,79 +461,15 @@ document.addEventListener("DOMContentLoaded", function () {
 
       const shopName = shopInfo.name;
       const shopNameSize = shopInfo.namesize || 12;
-
       const textColor = getTextColorForShop(shopId);
       const textBgColor = shopInfo.textBgColor || null;
       const textBgOpacity = shopInfo.textBgOpacity !== undefined ? shopInfo.textBgOpacity : 0.92;
 
-      const shapes = getAllShapes(shop);
-      let minX = Infinity,
-        minY = Infinity;
-      let maxX = -Infinity,
-        maxY = -Infinity;
+      const bounds = getShopBounds(shop);
+      if (!bounds) return;
 
-      shapes.forEach(shape => {
-        try {
-          const bbox = shape.getBBox();
-          minX = Math.min(minX, bbox.x);
-          minY = Math.min(minY, bbox.y);
-          maxX = Math.max(maxX, bbox.x + bbox.width);
-          maxY = Math.max(maxY, bbox.y + bbox.height);
-        } catch (e) {
-          console.warn(`Ошибка при получении bbox для ${shape.tagName} в ${shopId}:`, e);
-        }
-      });
-
-      if (minX === Infinity) {
-        const rect = shop.querySelector("rect");
-        if (rect) {
-          const x = parseFloat(rect.getAttribute("x")) || 0;
-          const y = parseFloat(rect.getAttribute("y")) || 0;
-          const w = parseFloat(rect.getAttribute("width")) || 0;
-          const h = parseFloat(rect.getAttribute("height")) || 0;
-          const transform = rect.getAttribute("transform");
-
-          if (transform) {
-            const matrixMatch = transform.match(/matrix\(([^)]+)\)/);
-            if (matrixMatch) {
-              const values = matrixMatch[1].split(",").map(parseFloat);
-              const a = values[0],
-                b = values[1],
-                c = values[2],
-                d = values[3],
-                e = values[4],
-                f = values[5];
-
-              const corners = [
-                { x: x, y: y },
-                { x: x + w, y: y },
-                { x: x, y: y + h },
-                { x: x + w, y: y + h },
-              ];
-
-              const transformedCorners = corners.map(corner => ({
-                x: a * corner.x + c * corner.y + e,
-                y: b * corner.x + d * corner.y + f,
-              }));
-
-              minX = Math.min(...transformedCorners.map(c => c.x));
-              minY = Math.min(...transformedCorners.map(c => c.y));
-              maxX = Math.max(...transformedCorners.map(c => c.x));
-              maxY = Math.max(...transformedCorners.map(c => c.y));
-            }
-          } else if (!isNaN(x) && !isNaN(y) && !isNaN(w) && !isNaN(h)) {
-            minX = x;
-            minY = y;
-            maxX = x + w;
-            maxY = y + h;
-          }
-        }
-
-        if (minX === Infinity) return;
-      }
-
-      const centerX = (minX + maxX) / 2;
-      let centerY = (minY + maxY) / 2;
+      const centerX = bounds.centerX;
+      let centerY = bounds.centerY;
 
       if (shopInfo.textOffsetY) {
         centerY += shopInfo.textOffsetY;
@@ -506,35 +482,29 @@ document.addEventListener("DOMContentLoaded", function () {
       const textWidth = shopName.length * (shopNameSize * 0.6);
       const textHeight = shopNameSize;
 
+      const bgRect = document.createElementNS("http://www.w3.org/2000/svg", "rect");
+      bgRect.setAttribute("x", centerX - textWidth / 2 - 8);
+      bgRect.setAttribute("y", centerY - textHeight / 2 - 4);
+      bgRect.setAttribute("width", textWidth + 16);
+      bgRect.setAttribute("height", textHeight + 8);
+      bgRect.setAttribute("rx", "6");
+      bgRect.setAttribute("ry", "6");
+
       if (textBgColor) {
-        const bgRect = document.createElementNS("http://www.w3.org/2000/svg", "rect");
-        bgRect.setAttribute("x", centerX - textWidth / 2 - 8);
-        bgRect.setAttribute("y", centerY - textHeight / 2 - 4);
-        bgRect.setAttribute("width", textWidth + 16);
-        bgRect.setAttribute("height", textHeight + 8);
-        bgRect.setAttribute("rx", "6");
-        bgRect.setAttribute("ry", "6");
         bgRect.setAttribute("fill", textBgColor);
         bgRect.setAttribute("fill-opacity", textBgOpacity);
         bgRect.setAttribute("stroke", textColor);
         bgRect.setAttribute("stroke-width", "1");
         bgRect.setAttribute("stroke-opacity", "0.3");
-        textGroup.appendChild(bgRect);
       } else {
-        const bgRect = document.createElementNS("http://www.w3.org/2000/svg", "rect");
-        bgRect.setAttribute("x", centerX - textWidth / 2 - 8);
-        bgRect.setAttribute("y", centerY - textHeight / 2 - 4);
-        bgRect.setAttribute("width", textWidth + 16);
-        bgRect.setAttribute("height", textHeight + 8);
-        bgRect.setAttribute("rx", "6");
-        bgRect.setAttribute("ry", "6");
         bgRect.setAttribute("fill", "white");
-        bgRect.setAttribute("fill-opacity", "0.0");
+        bgRect.setAttribute("fill-opacity", "0");
         bgRect.setAttribute("stroke", "#164680");
         bgRect.setAttribute("stroke-width", "1");
-        bgRect.setAttribute("stroke-opacity", "0.0");
-        textGroup.appendChild(bgRect);
+        bgRect.setAttribute("stroke-opacity", "0");
       }
+
+      textGroup.appendChild(bgRect);
 
       const text = document.createElementNS("http://www.w3.org/2000/svg", "text");
       text.setAttribute("x", centerX);
@@ -553,83 +523,9 @@ document.addEventListener("DOMContentLoaded", function () {
     });
   }
 
-  // ========== ФУНКЦИЯ ЦЕНТРИРОВАНИЯ НА МАГАЗИНЕ ==========
-  function centerOnShop(shopId, zoomLevel) {
-    if (!panZoomInstance) {
-      console.warn("PanZoom не инициализирован");
-      return false;
-    }
-
-    const shop = document.getElementById(shopId);
-    if (!shop) {
-      console.warn(`Магазин ${shopId} не найден`);
-      return false;
-    }
-
-    const shapes = getAllShapes(shop);
-    if (!shapes.length) return false;
-
-    let minX = Infinity,
-      minY = Infinity;
-    let maxX = -Infinity,
-      maxY = -Infinity;
-
-    shapes.forEach(shape => {
-      try {
-        const bbox = shape.getBBox();
-        minX = Math.min(minX, bbox.x);
-        minY = Math.min(minY, bbox.y);
-        maxX = Math.max(maxX, bbox.x + bbox.width);
-        maxY = Math.max(maxY, bbox.y + bbox.height);
-      } catch (e) {}
-    });
-
-    if (minX === Infinity) return false;
-
-    const centerX = (minX + maxX) / 2;
-    const centerY = (minY + maxY) / 2;
-
-    const container = document.getElementById("map-container");
-    const containerRect = container.getBoundingClientRect();
-
-    panZoomInstance.zoom(zoomLevel);
-    panZoomInstance.pan({
-      x: containerRect.width / 2 - centerX * zoomLevel,
-      y: containerRect.height / 2 - centerY * zoomLevel,
-    });
-
-    return true;
-  }
-  window.centerOnShop = centerOnShop;
-
-  // ========== ПОЛУЧЕНИЕ ID МАГАЗИНА ИЗ GET-ПАРАМЕТРА ==========
-  function getCurrentShopFromURL() {
-    const urlParams = new URLSearchParams(window.location.search);
-    const shopId = urlParams.get("location");
-    if (!shopId || !shopData[shopId]) return null;
-    return { shopId, zoom: shopData[shopId].zoom || 2.0 };
-  }
-
-  // ========== АВТОМАТИЧЕСКОЕ ЦЕНТРИРОВАНИЕ ==========
-  function initAutoCenterAndHighlight() {
-    let targetShop = getCurrentShopFromURL();
-
-    if (targetShop && shopData[targetShop.shopId]) {
-      const waitForPanZoom = setInterval(() => {
-        if (panZoomInstance && document.getElementById(targetShop.shopId)) {
-          clearInterval(waitForPanZoom);
-          setTimeout(() => {
-            highlightShop(targetShop.shopId);
-            centerOnShop(targetShop.shopId, targetShop.zoom);
-          }, 200);
-        }
-      }, 100);
-    }
-  }
-
-  // ========== НАСТРОЙКА ВИДИМОСТИ ТЕКСТА ПРИ ЗУМЕ ==========
   function adjustTextVisibility() {
     if (!panZoomInstance) return;
+
     const zoom = panZoomInstance.getZoom();
 
     document.querySelectorAll("#map-container svg .shop-label text").forEach(text => {
@@ -646,19 +542,106 @@ document.addEventListener("DOMContentLoaded", function () {
     });
   }
 
-  // ========== ОБНОВЛЕНИЕ ПРИ ИЗМЕНЕНИИ РАЗМЕРА ОКНА ==========
-  function handleResize() {
-    if (panZoomInstance) {
-      setTimeout(() => {
-        panZoomInstance.resize();
-        panZoomInstance.fit();
-        panZoomInstance.center();
-        adjustTextVisibility();
-      }, 100);
+  function centerOnShop(shopId, zoomLevel, offsetY = 0) {
+    if (!panZoomInstance) return false;
+
+    const shop = document.getElementById(shopId);
+    if (!shop) {
+      console.warn(`Магазин ${shopId} не найден`);
+      return false;
+    }
+
+    const bounds = getShopBounds(shop);
+    if (!bounds) {
+      console.warn(`Не удалось получить границы магазина ${shopId}`);
+      return false;
+    }
+
+    try {
+      panZoomInstance.resize();
+      panZoomInstance.updateBBox();
+      panZoomInstance.fit();
+      panZoomInstance.center();
+      panZoomInstance.zoom(zoomLevel);
+
+      requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+          const screenPoint = getScreenPointFromViewportCoords(bounds.centerX, bounds.centerY);
+
+          if (!screenPoint) {
+            showMap();
+            return;
+          }
+
+          const rect = mapContainer.getBoundingClientRect();
+          const desiredX = rect.left + rect.width / 2;
+          const desiredY = rect.top + rect.height / 2 + offsetY;
+
+          panZoomInstance.panBy({
+            x: desiredX - screenPoint.x,
+            y: desiredY - screenPoint.y,
+          });
+
+          highlightShop(shopId);
+          applyFilter(currentFilter);
+          adjustTextVisibility();
+          showMap();
+        });
+      });
+
+      return true;
+    } catch (e) {
+      console.error("Ошибка centerOnShop:", e);
+      showMap();
+      return false;
     }
   }
 
-  // ========== ОБРАБОТЧИКИ ДЛЯ МАГАЗИНОВ ==========
+  window.centerOnShop = centerOnShop;
+
+  function applyCurrentShopView() {
+    if (!panZoomInstance) return;
+
+    const config = getCurrentShopConfig();
+
+    if (!config) {
+      highlightedShopId = null;
+      panZoomInstance.resize();
+      panZoomInstance.updateBBox();
+      panZoomInstance.fit();
+      panZoomInstance.center();
+      applyFilter(currentFilter);
+      adjustTextVisibility();
+      showMap();
+      return;
+    }
+
+    const shop = document.getElementById(config.shopId);
+
+    if (!shop) {
+      highlightedShopId = null;
+      panZoomInstance.resize();
+      panZoomInstance.updateBBox();
+      panZoomInstance.fit();
+      panZoomInstance.center();
+      applyFilter(currentFilter);
+      adjustTextVisibility();
+      showMap();
+      return;
+    }
+
+    centerOnShop(config.shopId, config.zoom, config.offsetY);
+  }
+
+  function handleResize() {
+    if (!panZoomInstance) return;
+
+    clearTimeout(resizeTimer);
+    resizeTimer = setTimeout(() => {
+      applyCurrentShopView();
+    }, 250);
+  }
+
   function attachShopEventHandlers() {
     allShops.forEach(shop => {
       if (isStaticElement(shop)) return;
@@ -668,7 +651,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
       shop.addEventListener("click", event => {
         event.stopPropagation();
-        showPopup(shop.id);
+        showPopup(shopId);
       });
 
       shop.addEventListener("touchstart", e => {
@@ -680,18 +663,21 @@ document.addEventListener("DOMContentLoaded", function () {
 
       shop.addEventListener("touchend", e => {
         e.stopPropagation();
+
         if (touchTimer) {
           clearTimeout(touchTimer);
           touchTimer = null;
         }
+
         if (!isPanning) {
           e.preventDefault();
-          showPopup(shop.id);
+          showPopup(shopId);
         }
+
         isPanning = false;
       });
 
-      shop.addEventListener("touchmove", e => {
+      shop.addEventListener("touchmove", () => {
         if (touchTimer) {
           clearTimeout(touchTimer);
           touchTimer = null;
@@ -699,20 +685,18 @@ document.addEventListener("DOMContentLoaded", function () {
         }
       });
 
-      // Обработчик mouseenter - меняем цвет заливки и цвет текста
       shop.addEventListener("mouseenter", () => {
         const shopCategoryAttr = shop.getAttribute("data-category");
         const isInactive = currentFilter !== "all" && !matchesCategory(shopCategoryAttr, currentFilter);
         if (isInactive) return;
 
-        // Меняем цвет заливки фигур
         const shapes = getAllShapes(shop);
         const hoverColor = shop.getAttribute("data-hover-color");
+
         shapes.forEach(shape => {
           shape.style.fill = hoverColor;
         });
 
-        // Меняем цвет текста в отдельном слое
         const textElement = document.querySelector(`.shop-label[data-shop-id="${shopId}"] text`);
         if (textElement) {
           const hoverTextColor = shop.getAttribute("data-text-hover-color");
@@ -722,7 +706,6 @@ document.addEventListener("DOMContentLoaded", function () {
         }
       });
 
-      // Обработчик mouseleave - восстанавливаем цвета
       shop.addEventListener("mouseleave", () => {
         const shopCategoryAttr = shop.getAttribute("data-category");
         const shapes = getAllShapes(shop);
@@ -731,7 +714,6 @@ document.addEventListener("DOMContentLoaded", function () {
         const filterColor = shop.getAttribute("data-filter-color");
         const highlightColor = shop.getAttribute("data-highlight-color");
 
-        // Восстанавливаем цвет заливки
         if (isInactive) {
           shapes.forEach(shape => {
             shape.style.fill = originalColor;
@@ -755,7 +737,6 @@ document.addEventListener("DOMContentLoaded", function () {
           shop.style.filter = "none";
         }
 
-        // Восстанавливаем цвет текста в отдельном слое
         const textElement = document.querySelector(`.shop-label[data-shop-id="${shopId}"] text`);
         if (textElement) {
           const originalTextColor = shop.getAttribute("data-text-color");
@@ -767,7 +748,6 @@ document.addEventListener("DOMContentLoaded", function () {
     });
   }
 
-  // ========== ИНИЦИАЛИЗАЦИЯ ФИЛЬТРОВ ==========
   function initFilters() {
     document.querySelectorAll(".filter-btn").forEach(btn => {
       btn.addEventListener("click", () => {
@@ -778,163 +758,93 @@ document.addEventListener("DOMContentLoaded", function () {
     });
   }
 
-  // ========== ОСНОВНАЯ ФУНКЦИЯ ИНИЦИАЛИЗАЦИИ ==========
-  function init() {
-    console.log("Инициализация SVG карты...");
+  function initPanZoom() {
+    if (typeof svgPanZoom === "undefined") {
+      console.error("svgPanZoom не найден.");
+      showMap();
+      return;
+    }
 
+    try {
+      panZoomInstance = svgPanZoom(svgElement, {
+        viewportSelector: viewportElement,
+        zoomEnabled: true,
+        controlIconsEnabled: true,
+        fit: true,
+        center: true,
+        minZoom: 0.3,
+        maxZoom: 10,
+        zoomScaleSensitivity: 0.2,
+        onZoom: function () {
+          adjustTextVisibility();
+        },
+      });
+
+      window.panZoomInstance = panZoomInstance;
+      panZoomInstance.updateBBox();
+
+      setTimeout(() => {
+        applyCurrentShopView();
+      }, 300);
+    } catch (e) {
+      console.error("Ошибка инициализации PanZoom:", e);
+      showMap();
+    }
+  }
+
+  function init() {
     svgElement.removeAttribute("width");
     svgElement.removeAttribute("height");
     svgElement.setAttribute("width", "100%");
 
-    if (allShops.length === 0) {
-      console.warn("Магазины не найдены. Проверьте атрибуты id у элементов <g>");
-    }
-
     saveOriginalColors();
-    addSVGLabels(); // СНАЧАЛА создаём текст
-    forceSetOriginalColors(); // ПОТОМ устанавливаем цвета
+    addSVGLabels();
+    forceSetOriginalColors();
     initPanZoom();
     attachShopEventHandlers();
     initFilters();
     disableStaticHover();
     applyFilter("all");
-    initAutoCenterAndHighlight();
+
     window.addEventListener("resize", handleResize);
+
+    if (window.visualViewport) {
+      window.visualViewport.addEventListener("resize", handleResize);
+    }
+
     setTimeout(adjustTextVisibility, 500);
 
     const closeBtn = document.querySelector(".close-btn");
-    if (closeBtn) closeBtn.addEventListener("click", closePopup);
+    if (closeBtn) {
+      closeBtn.addEventListener("click", closePopup);
+    }
+
     window.addEventListener("click", event => {
-      if (event.target === document.getElementById("shop-popup")) closePopup();
-    });
-    document.addEventListener("keydown", event => {
-      if (event.key === "Escape") closePopup();
+      if (event.target === document.getElementById("shop-popup")) {
+        closePopup();
+      }
     });
 
-    console.log("Инициализация завершена");
+    document.addEventListener("keydown", event => {
+      if (event.key === "Escape") {
+        closePopup();
+      }
+    });
   }
 
   init();
+
+  setTimeout(() => {
+    showMap();
+  }, 2500);
 });
 
-// Добавьте в конец вашего main.js (после всех инициализаций)
 window.addEventListener("pageshow", function () {
-  // При возврате на страницу закрываем попап
   const popup = document.getElementById("shop-popup");
-  if (popup) {
-    popup.style.display = "none";
-  }
+  if (popup) popup.style.display = "none";
 });
 
 window.addEventListener("popstate", function () {
-  // При навигации назад/вперёд закрываем попап
   const popup = document.getElementById("shop-popup");
-  if (popup) {
-    popup.style.display = "none";
-  }
+  if (popup) popup.style.display = "none";
 });
-
-// ========== УНИВЕРСАЛЬНОЕ ЦЕНТРИРОВАНИЕ ПО БЛОКУ #current-shop ==========
-(function () {
-  // Скрываем карту сразу
-  var mapContainer = document.getElementById("map-container");
-  if (mapContainer) {
-    mapContainer.style.opacity = "0";
-    mapContainer.style.transition = "opacity 0.3s ease";
-  }
-
-  function centerMapOnShop(shopId, zoomLevel) {
-    if (!window.panZoomInstance) {
-      console.warn("PanZoom не инициализирован");
-      return false;
-    }
-
-    var shop = document.getElementById(shopId);
-    if (!shop) {
-      console.warn("Элемент с id=" + shopId + " не найден");
-      return false;
-    }
-
-    // Получаем позицию элемента на странице
-    var shopRect = shop.getBoundingClientRect();
-    var svgRect = document.querySelector("#map-container svg").getBoundingClientRect();
-
-    // Вычисляем центр элемента относительно SVG
-    var centerX = shopRect.left + shopRect.width / 2 - svgRect.left;
-    var centerY = shopRect.top + shopRect.height / 2 - svgRect.top;
-
-    console.log("Центр элемента (отладка):", centerX, centerY);
-
-    // Сбрасываем и устанавливаем зум
-    window.panZoomInstance.reset();
-    window.panZoomInstance.zoom(zoomLevel);
-
-    setTimeout(function () {
-      var sizes = window.panZoomInstance.getSizes();
-      var currentZoom = window.panZoomInstance.getZoom();
-
-      var panX = sizes.width / 2 - centerX * currentZoom;
-      var panY = sizes.height / 2 - centerY * currentZoom;
-
-      console.log("Панорамирование:", panX, panY);
-
-      window.panZoomInstance.pan({
-        x: panX,
-        y: panY,
-      });
-
-      // ПОКАЗЫВАЕМ КАРТУ ПОСЛЕ ЦЕНТРИРОВАНИЯ
-      if (mapContainer) {
-        setTimeout(function () {
-          mapContainer.style.opacity = "1";
-        }, 50);
-      }
-    }, 100);
-
-    if (typeof window.highlightShop === "function") {
-      window.highlightShop(shopId);
-    }
-
-    return true;
-  }
-
-  setTimeout(function () {
-    var block = document.getElementById("current-shop");
-    if (!block) {
-      // Если нет блока current-shop - показываем карту сразу
-      if (mapContainer) {
-        mapContainer.style.opacity = "1";
-      }
-      return;
-    }
-
-    var shopId = block.getAttribute("data-shop-id");
-    var zoom = parseFloat(block.getAttribute("data-zoom"));
-
-    if (!shopId) {
-      if (mapContainer) mapContainer.style.opacity = "1";
-      return;
-    }
-
-    var finalZoom = !isNaN(zoom) && zoom > 0 ? zoom : 2.0;
-
-    console.log("Центрирование по #current-shop: " + shopId + ", zoom=" + finalZoom);
-
-    var checkInterval = setInterval(function () {
-      if (window.panZoomInstance && document.getElementById(shopId)) {
-        clearInterval(checkInterval);
-        setTimeout(function () {
-          centerMapOnShop(shopId, finalZoom);
-        }, 300);
-      }
-    }, 200);
-  }, 500);
-})();
-
-// Показываем карту, если нет current-shop или после центрирования
-setTimeout(function () {
-  var container = document.getElementById("map-container");
-  if (container && container.style.opacity !== "1") {
-    container.style.opacity = "1";
-  }
-}, 2000); // Запасной вариант - показать через 2 секунды в любом случае
