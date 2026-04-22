@@ -59,7 +59,7 @@
 #map-container {
   position: relative;
   width: 100%;
-  height: clamp(420px, 70vh, 900px);
+  aspect-ratio: 4947 / 1936;
   border: 2px solid #e27f21;
   border-radius: 10px;
   overflow: hidden;
@@ -76,6 +76,84 @@
     width: 100%;
     height: 100%;
     background: #fafafa;
+  }
+}
+
+// ============================================================
+// КНОПКИ УПРАВЛЕНИЯ КАРТОЙ
+// ============================================================
+.map-controls {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 12px;
+  flex-wrap: wrap;
+
+  button {
+    appearance: none;
+    border: none;
+    outline: none;
+    cursor: pointer;
+
+    min-width: 44px;
+    height: 30px;
+    padding: 0 16px;
+    border-radius: 10px;
+
+    background: #164680;
+    color: #ffffff;
+    font-family: "Ubuntu", sans-serif;
+    font-size: 16px;
+    font-weight: 500;
+    line-height: 1;
+
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    box-shadow: 0 4px 12px rgba(22, 70, 128, 0.18);
+    transition:
+      background 0.2s ease,
+      transform 0.2s ease,
+      box-shadow 0.2s ease;
+
+    &:hover {
+      background: #1d5aa3;
+      transform: translateY(-1px);
+      box-shadow: 0 6px 16px rgba(22, 70, 128, 0.24);
+    }
+
+    &:active {
+      transform: translateY(0);
+      box-shadow: 0 3px 8px rgba(22, 70, 128, 0.18);
+    }
+
+    &:focus-visible {
+      box-shadow:
+        0 0 0 3px rgba(226, 127, 33, 0.35),
+        0 4px 12px rgba(22, 70, 128, 0.18);
+    }
+  }
+
+  #zoom-in,
+  #zoom-out {
+    width: 44px;
+    padding: 0;
+    font-size: 22px;
+    font-weight: 700;
+  }
+
+  #zoom-reset {
+    background: #e27f21;
+    min-width: 96px;
+
+    &:hover {
+      background: #f08d2e;
+    }
+
+    &:active {
+      background: #d77418;
+    }
   }
 }
 
@@ -244,10 +322,27 @@
     }
   }
 
-  #map-container {
-    height: 65vh;
-    min-height: 360px;
-    max-height: 700px;
+  .map-controls {
+    justify-content: center;
+    gap: 8px;
+    margin-top: 10px;
+
+    button {
+      min-width: 42px;
+      height: 20px;
+      padding: 0 14px;
+      font-size: 15px;
+    }
+
+    #zoom-in,
+    #zoom-out {
+      width: 42px;
+      font-size: 16px;
+    }
+
+    #zoom-reset {
+      min-width: 88px;
+    }
   }
 
   .popup-content {
@@ -261,5 +356,11 @@
 
   .popup-desc {
     font-size: 14px;
+  }
+}
+
+@media (max-width: 576px) {
+  #map-container {
+    aspect-ratio: 1 / 1;
   }
 }

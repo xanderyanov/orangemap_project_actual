@@ -1,5 +1,5 @@
 mixin svgmap 
-  //- #current-shop(data-shop-id="belvest" data-zoom="7.5" data-offset-y="-2" data-offset-y-mobile="6" style="display: none;")
+  #current-shop(data-shop-id="belvest" data-zoom="7.5" data-offset-y="-2" data-offset-y-mobile="6" style="display: none;")
   .svgMap__area#svgMap
     .filters
       button.filter-btn.active(data-filter="all") Все
@@ -13,11 +13,11 @@ mixin svgmap
       #map-wrapper
         #map-container
           include assets/img/orange20.svg
-          //- .map-controls
-          //-   button(type="button" id="zoom-in") +
-          //-   button(type="button" id="zoom-out") -
-          //-   button(type="button" id="zoom-reset") Сброс
         #shop-labels
+      .map-controls
+        button(type="button" id="zoom-in") +
+        button(type="button" id="zoom-out") -
+        button(type="button" id="zoom-reset") Сброс
 
     #shop-popup.popup
       .popup-content

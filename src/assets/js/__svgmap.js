@@ -642,6 +642,39 @@ document.addEventListener("DOMContentLoaded", function () {
     }, 250);
   }
 
+  function resetMapView() {
+    applyCurrentShopView();
+  }
+
+  function attachCustomControls() {
+    const zoomInBtn = document.getElementById("zoom-in");
+    const zoomOutBtn = document.getElementById("zoom-out");
+    const zoomResetBtn = document.getElementById("zoom-reset");
+
+    if (zoomInBtn) {
+      zoomInBtn.addEventListener("click", () => {
+        if (!panZoomInstance) return;
+        panZoomInstance.zoomIn();
+        adjustTextVisibility();
+      });
+    }
+
+    if (zoomOutBtn) {
+      zoomOutBtn.addEventListener("click", () => {
+        if (!panZoomInstance) return;
+        panZoomInstance.zoomOut();
+        adjustTextVisibility();
+      });
+    }
+
+    if (zoomResetBtn) {
+      zoomResetBtn.addEventListener("click", () => {
+        if (!panZoomInstance) return;
+        resetMapView();
+      });
+    }
+  }
+
   function attachShopEventHandlers() {
     allShops.forEach(shop => {
       if (isStaticElement(shop)) return;
@@ -769,11 +802,11 @@ document.addEventListener("DOMContentLoaded", function () {
       panZoomInstance = svgPanZoom(svgElement, {
         viewportSelector: viewportElement,
         zoomEnabled: true,
-        controlIconsEnabled: true,
+        controlIconsEnabled: false,
         fit: true,
         center: true,
         minZoom: 0.3,
-        maxZoom: 10,
+        maxZoom: 25,
         zoomScaleSensitivity: 0.2,
         onZoom: function () {
           adjustTextVisibility();
@@ -802,6 +835,7 @@ document.addEventListener("DOMContentLoaded", function () {
     forceSetOriginalColors();
     initPanZoom();
     attachShopEventHandlers();
+    attachCustomControls();
     initFilters();
     disableStaticHover();
     applyFilter("all");
